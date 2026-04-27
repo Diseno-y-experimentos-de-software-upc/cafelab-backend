@@ -1,4 +1,7 @@
+.git
 .gitignore
 docker-compose.yml
-.mvn/
-mvnw.cmd
+target
+.env
+.idea
+*.iml
