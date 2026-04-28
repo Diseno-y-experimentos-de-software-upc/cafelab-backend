@@ -49,7 +49,7 @@ public class CoffeeLot extends AuditableAbstractAggregateRoot<CoffeeLot> {
     @AttributeOverride(name = "value", column = @Column(name = "status", length = 20))
     private CoffeeLotStatus status;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "coffee_lot_certifications", joinColumns = @JoinColumn(name = "coffee_lot_id"))
     @Column(name = "certification", length = 100)
     private List<String> certifications = new ArrayList<>();

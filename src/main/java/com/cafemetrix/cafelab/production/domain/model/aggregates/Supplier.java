@@ -36,7 +36,7 @@ public class Supplier extends AuditableAbstractAggregateRoot<Supplier> {
     @AttributeOverride(name = "value", column = @Column(name = "location", length = 200))
     private SupplierLocation location;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "supplier_specialties", joinColumns = @JoinColumn(name = "supplier_id"))
     @Column(name = "specialty", length = 100)
     private List<String> specialties = new ArrayList<>();
