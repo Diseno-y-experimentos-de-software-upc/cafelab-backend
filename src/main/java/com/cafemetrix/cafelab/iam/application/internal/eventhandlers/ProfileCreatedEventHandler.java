@@ -24,7 +24,7 @@ public class ProfileCreatedEventHandler {
     @EventListener
     @Transactional
     public void on(ProfileCreatedEvent event) {
-        var userOpt = userCommandService.handle(new SignUpCommand(event.email(), event.password()));
+        var userOpt = userCommandService.handle(new SignUpCommand(event.email(), event.password(), event.role()));
         if (userOpt.isEmpty()) {
             return;
         }

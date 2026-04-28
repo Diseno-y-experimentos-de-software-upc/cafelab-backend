@@ -37,7 +37,7 @@ public class ProfileCommandServiceImpl implements ProfileCommandService {
                 command.cafeteriaName(), command.experience(), command.profilePicture(),
                 command.paymentMethod(), command.isFirstLogin(), command.plan(), command.hasPlan());
         profileRepository.save(profile);
-        eventPublisher.publishEvent(new ProfileCreatedEvent(command.email(), command.password()));
+        eventPublisher.publishEvent(new ProfileCreatedEvent(command.email(), command.password(), command.role()));
         return Optional.of(profile);
     }
 
