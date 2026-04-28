@@ -33,10 +33,10 @@ public class UserCommandServiceImpl implements UserCommandService {
     public Optional<ImmutablePair<User, String>> handle(SignInCommand command) {
         var user = userRepository.findByEmail(command.email());
         if (user.isEmpty()) {
-            throw new RuntimeException("User not found");
+            throw new IllegalArgumentException("User not found");
         }
         if (!hashingService.matches(command.password(), user.get().getPassword())) {
-            throw new RuntimeException("Invalid password");
+            throw new IllegalArgumentException("Invalid password");
         }
         var token = tokenService.generateToken(user.get().getEmail());
         return Optional.of(ImmutablePair.of(user.get(), token));
@@ -46,7 +46,7 @@ public class UserCommandServiceImpl implements UserCommandService {
     @Transactional
     public Optional<User> handle(SignUpCommand command) {
         if (userRepository.existsByEmail(command.email())) {
-            throw new RuntimeException("Email already exists");
+            throw new IllegalArgumentException("Email already exists");
         }
         var hashedPassword = hashingService.encode(command.password());
         var user = new User(command.email(), hashedPassword, command.role());
