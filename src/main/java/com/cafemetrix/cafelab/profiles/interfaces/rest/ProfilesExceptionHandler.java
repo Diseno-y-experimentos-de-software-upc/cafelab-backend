@@ -1,7 +1,9 @@
 package com.cafemetrix.cafelab.profiles.interfaces.rest;
 
 import com.cafemetrix.cafelab.profiles.domain.exceptions.ProfileCreationFailedException;
+import com.cafemetrix.cafelab.profiles.domain.exceptions.ProfileFieldInUseException;
 import com.cafemetrix.cafelab.profiles.domain.exceptions.ProfileNotFoundException;
+import com.cafemetrix.cafelab.profiles.interfaces.rest.resources.ProfileFieldInUseResource;
 import com.cafemetrix.cafelab.shared.interfaces.rest.resources.MessageResource;
 import com.cafemetrix.cafelab.shared.interfaces.rest.support.CafeLabScopedExceptionHandlerSupport;
 import org.springframework.core.Ordered;
@@ -23,5 +25,12 @@ public class ProfilesExceptionHandler extends CafeLabScopedExceptionHandlerSuppo
     @ExceptionHandler(ProfileCreationFailedException.class)
     public ResponseEntity<MessageResource> handleProfileCreationFailed(ProfileCreationFailedException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResource(ex.getMessage()));
+    }
+
+    @ExceptionHandler(ProfileFieldInUseException.class)
+    public ResponseEntity<ProfileFieldInUseResource> handleProfileFieldInUse(
+            ProfileFieldInUseException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(new ProfileFieldInUseResource(ex.field().wireName(), ex.getMessage()));
     }
 }

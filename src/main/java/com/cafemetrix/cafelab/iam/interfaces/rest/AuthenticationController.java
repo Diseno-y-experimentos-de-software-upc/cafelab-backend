@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +38,7 @@ public class AuthenticationController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Autenticación correcta."),
             @ApiResponse(responseCode = "404", description = "Credenciales inválidas.")})
-    public ResponseEntity<AuthenticatedUserResource> signIn(@RequestBody SignInResource signInResource) {
+    public ResponseEntity<AuthenticatedUserResource> signIn(@Valid @RequestBody SignInResource signInResource) {
         var signInCommand = SignInCommandFromResourceAssembler.toCommandFromResource(signInResource);
         var authenticatedUser = userCommandService.handle(signInCommand);
         if (authenticatedUser.isEmpty()) {
@@ -50,11 +51,11 @@ public class AuthenticationController {
     }
 
     @PostMapping("/sign-up")
-    @Operation(summary = "Sign-up", description = "Registro; devuelve token como en MediTrack.")
+    @Operation(summary = "Sign-up", description = "Registro; devuelve token.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Usuario creado y sesión iniciada."),
             @ApiResponse(responseCode = "400", description = "Solicitud inválida.")})
-    public ResponseEntity<AuthenticatedUserResource> signUp(@RequestBody SignUpResource signUpResource) {
+    public ResponseEntity<AuthenticatedUserResource> signUp(@Valid @RequestBody SignUpResource signUpResource) {
         var signUpCommand = SignUpCommandFromResourceAssembler.toCommandFromResource(signUpResource);
         var user = userCommandService.handle(signUpCommand);
         if (user.isEmpty()) {
