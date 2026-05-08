@@ -26,6 +26,12 @@ public class RoastProfileCommandServiceImpl implements RoastProfileCommandServic
 
     @Override
     public Optional<RoastProfile> handle(CreateRoastProfileCommand command) {
+        if (command.tempStart() != null && command.tempEnd() != null
+                && command.tempStart() >= command.tempEnd()) {
+            throw new IllegalArgumentException(
+                    "La temperatura inicial no puede ser mayor o igual que la temperatura final");
+        }
+
         var coffeeLot = coffeeLotRepository.findById(command.coffeeLotId());
         if (coffeeLot.isEmpty()) {
             throw new CoffeeLotNotFoundException(command.coffeeLotId());
@@ -42,6 +48,12 @@ public class RoastProfileCommandServiceImpl implements RoastProfileCommandServic
 
     @Override
     public Optional<RoastProfile> handle(UpdateRoastProfileCommand command) {
+        if (command.tempStart() != null && command.tempEnd() != null
+                && command.tempStart() >= command.tempEnd()) {
+            throw new IllegalArgumentException(
+                    "La temperatura inicial no puede ser mayor o igual que la temperatura final");
+        }
+
         var roastProfile = roastProfileRepository.findById(command.roastProfileId());
         if (roastProfile.isPresent()) {
             var coffeeLot = coffeeLotRepository.findById(command.coffeeLotId());
