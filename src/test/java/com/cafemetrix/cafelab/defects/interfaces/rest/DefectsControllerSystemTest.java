@@ -3,6 +3,8 @@ package com.cafemetrix.cafelab.defects.interfaces.rest;
 import com.cafemetrix.cafelab.defects.domain.exceptions.DefectNotFoundException;
 import com.cafemetrix.cafelab.defects.domain.model.aggregates.Defect;
 import com.cafemetrix.cafelab.defects.domain.model.commands.CreateDefectCommand;
+import com.cafemetrix.cafelab.defects.domain.model.queries.GetDefectByIdForUserQuery;
+import com.cafemetrix.cafelab.defects.domain.model.queries.GetDefectsByUserIdQuery;
 import com.cafemetrix.cafelab.defects.domain.services.DefectCommandService;
 import com.cafemetrix.cafelab.defects.domain.services.DefectQueryService;
 import com.cafemetrix.cafelab.iam.infrastructure.authorization.sfs.support.CurrentProfileIdResolver;
@@ -10,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration;
@@ -31,6 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
     controllers = DefectsController.class,
     excludeAutoConfiguration = {SecurityAutoConfiguration.class, SecurityFilterAutoConfiguration.class}
 )
+@ActiveProfiles("dev")
 @DisplayName("System Tests: DefectsController — /api/v1/defects")
 class DefectsControllerSystemTest {
 
@@ -145,7 +149,7 @@ class DefectsControllerSystemTest {
             when(currentProfileIdResolver.resolveProfileId()).thenReturn(Optional.of(1L));
             var defect1 = mockDefect(1L, 1L);
             var defect2 = mockDefect(2L, 1L);
-            when(defectQueryService.handle(any())).thenReturn(List.of(defect1, defect2));
+            when(defectQueryService.handle(any(GetDefectsByUserIdQuery.class))).thenReturn(List.of(defect1, defect2));
 
             mockMvc.perform(get("/api/v1/defects"))
                 .andExpect(status().isOk())
@@ -156,7 +160,7 @@ class DefectsControllerSystemTest {
         @DisplayName("Given usuario autenticado sin defectos, When GET /api/v1/defects, Then responde 200 con lista vacía")
         void givenAuthenticatedUserNoDefects_whenGet_thenReturns200WithEmptyList() throws Exception {
             when(currentProfileIdResolver.resolveProfileId()).thenReturn(Optional.of(1L));
-            when(defectQueryService.handle(any())).thenReturn(List.of());
+            when(defectQueryService.handle(any(GetDefectsByUserIdQuery.class))).thenReturn(List.of());
 
             mockMvc.perform(get("/api/v1/defects"))
                 .andExpect(status().isOk())
@@ -184,7 +188,7 @@ class DefectsControllerSystemTest {
         void givenExistingDefect_whenGetById_thenReturns200() throws Exception {
             when(currentProfileIdResolver.resolveProfileId()).thenReturn(Optional.of(1L));
             var defect = mockDefect(10L, 1L);
-            when(defectQueryService.handle(any())).thenReturn(Optional.of(defect));
+            when(defectQueryService.handle(any(GetDefectByIdForUserQuery.class))).thenReturn(Optional.of(defect));
 
             mockMvc.perform(get("/api/v1/defects/10"))
                 .andExpect(status().isOk())
@@ -196,7 +200,7 @@ class DefectsControllerSystemTest {
         @DisplayName("Given defecto no existente, When GET /api/v1/defects/999, Then responde 404")
         void givenNonExistingDefect_whenGetById_thenReturns404() throws Exception {
             when(currentProfileIdResolver.resolveProfileId()).thenReturn(Optional.of(1L));
-            when(defectQueryService.handle(any())).thenThrow(new DefectNotFoundException(999L));
+            when(defectQueryService.handle(any(GetDefectByIdForUserQuery.class))).thenThrow(new DefectNotFoundException(999L));
 
             mockMvc.perform(get("/api/v1/defects/999"))
                 .andExpect(status().isNotFound());
