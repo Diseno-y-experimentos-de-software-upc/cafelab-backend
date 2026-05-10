@@ -18,7 +18,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 /**
- * Misma idea que MediTrack: JWT con subject = email; carga {@link org.springframework.security.core.userdetails.UserDetails}.
+ * Filtro de autorización por Bearer JWT: el subject del token es el email del usuario y se usa para cargar
+ * {@link org.springframework.security.core.userdetails.UserDetails} en el contexto de seguridad.
  */
 public class BearerAuthorizationRequestFilter extends OncePerRequestFilter {
 

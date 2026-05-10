@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 /**
- * Misma lógica de sign-in / sign-up que {@code meditrack-platform} (sin organization/admin).
+ * Lógica estándar de sign-in / sign-up del bounded context IAM (sin organization/admin).
  */
 @Service
 public class UserCommandServiceImpl implements UserCommandService {
