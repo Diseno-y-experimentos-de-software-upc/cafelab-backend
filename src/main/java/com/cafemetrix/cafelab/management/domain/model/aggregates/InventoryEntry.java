@@ -44,6 +44,8 @@ public class InventoryEntry extends AuditableAbstractAggregateRoot<InventoryEntr
     }
 
     public InventoryEntry(CreateInventoryEntryCommand command) {
+        validateDateUsed(command.dateUsed());
+
         this.userId = command.userId();
         this.coffeeLotId = command.coffeeLotId();
         this.quantityUsed = command.quantityUsed();
@@ -57,6 +59,20 @@ public class InventoryEntry extends AuditableAbstractAggregateRoot<InventoryEntr
         this.dateUsed = command.dateUsed();
         this.finalProduct = new FinalProduct(command.finalProduct());
         return this;
+    }
+
+    private void validateDateUsed(LocalDateTime dateUsed) {
+        if (dateUsed == null) {
+            throw new IllegalArgumentException("La fecha de uso es requerida");
+        }
+
+        if (dateUsed.isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("La fecha de uso no puede ser anterior a un año desde hoy");
+        }
+
+        if (dateUsed.isAfter(LocalDateTime.now().plusYears(5))) {
+            throw new IllegalArgumentException("La fecha de uso no puede ser posterior a 5 años desde hoy");
+        }
     }
 
     public Double getQuantityUsed() { return quantityUsed; }
