@@ -67,7 +67,7 @@ public class CuppingSession extends AuditableAbstractAggregateRoot<CuppingSessio
         this.origin = c.origin().trim();
         this.variety = c.variety().trim();
         this.processing = c.processing().trim();
-        // La fecha de sesión se fija en el alta y no se modifica por actualización (negocio + integridad).
+        this.sessionDate = c.sessionDate();
         this.favorite = c.favorite();
         this.resultsJson = blankToNull(c.resultsJson());
         this.roastStyleNotes = blankToNull(c.roastStyleNotes());

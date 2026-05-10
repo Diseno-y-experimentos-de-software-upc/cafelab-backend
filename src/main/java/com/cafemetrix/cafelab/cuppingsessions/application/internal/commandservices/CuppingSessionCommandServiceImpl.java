@@ -8,8 +8,6 @@ import com.cafemetrix.cafelab.cuppingsessions.infrastructure.persistence.jpa.rep
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.Optional;
 
 @Service
@@ -23,7 +21,6 @@ public class CuppingSessionCommandServiceImpl implements CuppingSessionCommandSe
     @Override
     @Transactional
     public Optional<CuppingSession> handle(CreateCuppingSessionCommand command) {
-        assertSessionDateForCreate(command.sessionDate());
         return Optional.of(repository.save(new CuppingSession(command)));
     }
 
@@ -37,18 +34,6 @@ public class CuppingSessionCommandServiceImpl implements CuppingSessionCommandSe
                             entity.applyUpdate(command);
                             return repository.save(entity);
                         });
-    }
-
-    /**
-     * En el alta, la fecha de sesión no puede ser anterior al día calendario actual (zona por defecto de la JVM).
-     * La fecha no se modifica en actualizaciones ({@link CuppingSession#applyUpdate}).
-     */
-    private static void assertSessionDateForCreate(LocalDate sessionDate) {
-        LocalDate today = LocalDate.now(ZoneId.systemDefault());
-        if (sessionDate.isBefore(today)) {
-            throw new IllegalArgumentException(
-                    "La fecha de la sesión no puede ser anterior al día actual. Elija hoy o una fecha futura.");
-        }
     }
 
     @Override
