@@ -1,8 +1,14 @@
 package com.cafemetrix.cafelab.production.interfaces.rest.resources;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
@@ -20,6 +26,7 @@ public record CreateCoffeeLotResource(
     @JsonProperty("lot_name")
     @NotBlank(message = "El nombre del lote es obligatorio")
     @Size(max = 100, message = "El nombre del lote no puede superar 100 caracteres")
+    @Pattern(regexp = "^[a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ ]+$", message = "El nombre no puede contener caracteres especiales")
     String lot_name,
 
     @JsonProperty("coffee_type")
@@ -34,12 +41,15 @@ public record CreateCoffeeLotResource(
 
     @JsonProperty("altitude")
     @NotNull(message = "La altitud es obligatoria")
-    @Positive(message = "La altitud debe ser un número positivo")
+    @Min(value = 0, message = "La altitud debe ser al menos 0 msnm")
+    @Max(value = 2500, message = "La altitud no puede superar 2500 msnm")
     Integer altitude,
 
     @JsonProperty("weight")
     @NotNull(message = "El peso es obligatorio")
-    @Positive(message = "El peso debe ser un número positivo")
+    @DecimalMin(value = "1.0", message = "El peso mínimo es 1 kg")
+    @DecimalMax(value = "70.0", message = "El peso máximo es 70 kg")
+    @Digits(integer = 2, fraction = 2, message = "El peso admite máximo 2 decimales")
     Double weight,
 
     @JsonProperty("origin")
