@@ -8,9 +8,26 @@ public record SupplierName(String value) {
         if (value == null || value.isBlank()) {
             throw new IllegalArgumentException("El nombre del proveedor no puede ser nulo o vacío");
         }
-        if (value.length() > 100) {
-            throw new IllegalArgumentException("El nombre del proveedor no puede tener más de 100 caracteres");
+
+        var trimmedValue = value.trim();
+
+        if (trimmedValue.length() < 2 || trimmedValue.length() > 100) {
+            throw new IllegalArgumentException("El nombre del proveedor debe tener entre 2 y 100 caracteres");
         }
+
+        if (trimmedValue.matches("^\\d+$")) {
+            throw new IllegalArgumentException("El nombre del proveedor no puede contener solo números");
+        }
+
+        if (trimmedValue.matches("^[,.;]+$")) {
+            throw new IllegalArgumentException("El nombre del proveedor solo puede contener letras, espacios y tildes");
+        }
+
+        if (!trimmedValue.matches("^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\\s]+$")) {
+            throw new IllegalArgumentException("El nombre del proveedor solo puede contener letras, espacios y tildes");
+        }
+
+        value = trimmedValue;
     }
 
     public SupplierName() {
