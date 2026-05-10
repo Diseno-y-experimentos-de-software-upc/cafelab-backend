@@ -9,8 +9,8 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 /**
- * Shared exception handlers for bounded-context {@code @RestControllerAdvice} beans
- * (MediTrack {@code OrganizationExceptionHandler} style, with {@link MessageResource} bodies).
+ * Shared exception handlers for bounded-context {@code @RestControllerAdvice} beans, returning
+ * {@link MessageResource} bodies for domain-level error cases.
  */
 public abstract class CafeLabScopedExceptionHandlerSupport {
 

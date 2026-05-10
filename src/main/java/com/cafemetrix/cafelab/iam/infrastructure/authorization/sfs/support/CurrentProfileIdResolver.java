@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 
 /**
- * Resuelve {@code profiles.id} con el email del JWT (principal MediTrack) y, si existe, {@code profiles.user_id}.
+ * Resuelve {@code profiles.id} con el email del JWT (subject del token) y, si existe, {@code profiles.user_id}.
  */
 @Component
 public class CurrentProfileIdResolver {

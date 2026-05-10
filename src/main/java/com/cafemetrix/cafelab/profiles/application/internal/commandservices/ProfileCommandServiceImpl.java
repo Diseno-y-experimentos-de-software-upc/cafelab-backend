@@ -1,5 +1,6 @@
 package com.cafemetrix.cafelab.profiles.application.internal.commandservices;
 
+import com.cafemetrix.cafelab.profiles.domain.exceptions.ProfileFieldInUseException;
 import com.cafemetrix.cafelab.profiles.domain.model.aggregates.Profile;
 import com.cafemetrix.cafelab.profiles.domain.model.commands.CreateProfileCommand;
 import com.cafemetrix.cafelab.profiles.domain.model.events.ProfileCreatedEvent;
@@ -10,6 +11,7 @@ import com.cafemetrix.cafelab.profiles.infrastructure.persistence.jpa.repositori
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
+import java.util.Locale;
 import java.util.Optional;
 
 @Service
@@ -49,9 +51,48 @@ public class ProfileCommandServiceImpl implements ProfileCommandService {
         }
 
         var updatedProfile = profile.get();
-        if (command.name() != null) updatedProfile.updateName(command.name());
-        if (command.email() != null) updatedProfile.updateEmailAddress(command.email());
-        if (command.cafeteriaName() != null) updatedProfile.updateCafeteriaName(command.cafeteriaName());
+        // Para campos únicos validamos colisión sólo cuando cambian respecto al valor actual.
+        if (command.email() != null && !command.email().isBlank()) {
+            String newEmail = command.email().trim();
+            String currentEmail = updatedProfile.getEmailAddress();
+            if (!equalsNormalized(newEmail, currentEmail)) {
+                if (profileRepository.existsByNormalizedEmailExcludingId(
+                        newEmail.toLowerCase(Locale.ROOT), updatedProfile.getId())) {
+                    throw new ProfileFieldInUseException(
+                            ProfileFieldInUseException.Field.EMAIL,
+                            "El correo ya está en uso por otra cuenta");
+                }
+            }
+            updatedProfile.updateEmailAddress(newEmail);
+        }
+        if (command.name() != null && !command.name().isBlank()) {
+            String newName = command.name().trim();
+            if (!equalsNormalized(newName, updatedProfile.getName())) {
+                if (profileRepository.existsByNormalizedNameExcludingId(
+                        newName.toLowerCase(Locale.ROOT), updatedProfile.getId())) {
+                    throw new ProfileFieldInUseException(
+                            ProfileFieldInUseException.Field.NAME,
+                            "El nombre ya está en uso por otra cuenta");
+                }
+            }
+            updatedProfile.updateName(newName);
+        }
+        if (command.cafeteriaName() != null) {
+            String newCafeteria = command.cafeteriaName().trim();
+            if (newCafeteria.isEmpty()) {
+                updatedProfile.updateCafeteriaName(newCafeteria);
+            } else if (!equalsNormalized(newCafeteria, updatedProfile.getCafeteriaName())) {
+                if (profileRepository.existsByNormalizedCafeteriaNameExcludingId(
+                        newCafeteria.toLowerCase(Locale.ROOT), updatedProfile.getId())) {
+                    throw new ProfileFieldInUseException(
+                            ProfileFieldInUseException.Field.CAFETERIA_NAME,
+                            "El nombre de la cafetería ya está en uso por otra cuenta");
+                }
+                updatedProfile.updateCafeteriaName(newCafeteria);
+            } else {
+                updatedProfile.updateCafeteriaName(newCafeteria);
+            }
+        }
         if (command.experience() != null) updatedProfile.updateExperience(command.experience());
         if (command.paymentMethod() != null) updatedProfile.updatePaymentMethod(command.paymentMethod());
         if (command.isFirstLogin() != null) updatedProfile.updateFirstLoginStatus(command.isFirstLogin());
@@ -60,5 +101,12 @@ public class ProfileCommandServiceImpl implements ProfileCommandService {
 
         profileRepository.save(updatedProfile);
         return Optional.of(updatedProfile);
+    }
+
+    private static boolean equalsNormalized(String a, String b) {
+        if (a == null || b == null) {
+            return a == null && b == null;
+        }
+        return a.trim().equalsIgnoreCase(b.trim());
     }
 }

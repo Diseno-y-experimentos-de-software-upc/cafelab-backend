@@ -35,4 +35,37 @@ public interface ProfileRepository extends JpaRepository<Profile, Long> {
      * @return True if the email address exists, otherwise false
      */
     boolean existsByEmailAddress(EmailAddress emailAddress);
+
+    /**
+     * ¿Existe otro perfil con el mismo email (case-insensitive, trim) cuyo id sea distinto al provisto?
+     * Si {@code excludingId} es {@code null}, considera todos los perfiles.
+     */
+    @Query("SELECT (COUNT(p) > 0) FROM Profile p "
+            + "WHERE LOWER(TRIM(p.emailAddress.address)) = :email "
+            + "AND (:excludingId IS NULL OR p.id <> :excludingId)")
+    boolean existsByNormalizedEmailExcludingId(
+            @Param("email") String normalizedEmail,
+            @Param("excludingId") Long excludingId);
+
+    /**
+     * ¿Existe otro perfil con el mismo nombre (case-insensitive, trim) cuyo id sea distinto al
+     * provisto? Útil para validar el cambio de "name".
+     */
+    @Query("SELECT (COUNT(p) > 0) FROM Profile p "
+            + "WHERE LOWER(TRIM(p.name)) = :name "
+            + "AND (:excludingId IS NULL OR p.id <> :excludingId)")
+    boolean existsByNormalizedNameExcludingId(
+            @Param("name") String normalizedName,
+            @Param("excludingId") Long excludingId);
+
+    /**
+     * ¿Existe otro perfil con el mismo {@code cafeteriaName} (case-insensitive, trim) cuyo id sea
+     * distinto al provisto? Si {@code excludingId} es {@code null}, considera todos los perfiles.
+     */
+    @Query("SELECT (COUNT(p) > 0) FROM Profile p "
+            + "WHERE LOWER(TRIM(p.cafeteriaName)) = :cafeteriaName "
+            + "AND (:excludingId IS NULL OR p.id <> :excludingId)")
+    boolean existsByNormalizedCafeteriaNameExcludingId(
+            @Param("cafeteriaName") String normalizedCafeteriaName,
+            @Param("excludingId") Long excludingId);
 }
