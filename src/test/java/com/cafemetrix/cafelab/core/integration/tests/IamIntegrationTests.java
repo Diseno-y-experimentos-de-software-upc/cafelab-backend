@@ -17,7 +17,7 @@ import org.springframework.http.HttpStatus;
 
 import java.util.Optional;
 
-public class UserIntegrationTests {
+public class IamIntegrationTests {
     private UserCommandService userCommandService;
     private AuthenticationController authenticationController;
 
@@ -87,7 +87,7 @@ public class UserIntegrationTests {
     }
 
     @Test
-    void signIn_ReturnsNotFound_WhenInvalidInput() {
+    void signIn_throwSignInException_WhenInvalidInput() {
         SignInResource resource = new SignInResource(
                 "tst@test.com",
                 "wrong-pass/"
