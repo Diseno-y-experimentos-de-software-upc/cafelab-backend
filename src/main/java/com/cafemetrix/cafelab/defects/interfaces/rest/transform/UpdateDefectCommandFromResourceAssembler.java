@@ -1,24 +1,26 @@
 package com.cafemetrix.cafelab.defects.interfaces.rest.transform;
 
-import com.cafemetrix.cafelab.defects.domain.model.commands.CreateDefectCommand;
+import com.cafemetrix.cafelab.defects.domain.model.commands.UpdateDefectCommand;
 import com.cafemetrix.cafelab.defects.interfaces.rest.resources.CreateDefectResource;
 
-public class CreateDefectCommandFromResourceAssembler {
+public final class UpdateDefectCommandFromResourceAssembler {
 
-    public static CreateDefectCommand toCommandFromResource(Long userId, CreateDefectResource resource) {
-        return new CreateDefectCommand(
+    private UpdateDefectCommandFromResourceAssembler() {}
+
+    public static UpdateDefectCommand toCommand(Long defectId, Long userId, CreateDefectResource resource) {
+        return new UpdateDefectCommand(
+                defectId,
                 userId,
                 resource.coffeeDisplayName().trim(),
                 blankToNull(resource.coffeeRegion()),
                 resource.coffeeVariety().trim(),
                 resource.coffeeTotalWeight(),
-                resource.name(),
-                resource.defectType(),
+                resource.name().trim(),
+                resource.defectType().trim(),
                 resource.defectWeight(),
                 resource.percentage(),
-                resource.probableCause(),
-                resource.suggestedSolution()
-        );
+                resource.probableCause().trim(),
+                resource.suggestedSolution().trim());
     }
 
     private static String blankToNull(String s) {

@@ -40,5 +40,9 @@ public record UpdateGrindCalibrationResource(
         if (calibrationDate == null) {
             throw new IllegalArgumentException("calibrationDate is required");
         }
+        if (calibrationDate.isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException(
+                    "La fecha de calibración debe ser hoy o una fecha futura.");
+        }
     }
 }
