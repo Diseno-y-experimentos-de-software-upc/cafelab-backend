@@ -8,12 +8,10 @@ import com.cafemetrix.cafelab.calibrations.domain.services.GrindCalibrationComma
 import com.cafemetrix.cafelab.calibrations.domain.services.GrindCalibrationQueryService;
 import com.cafemetrix.cafelab.calibrations.interfaces.rest.CalibrationsController;
 import com.cafemetrix.cafelab.calibrations.interfaces.rest.resources.CreateGrindCalibrationResource;
-import com.cafemetrix.cafelab.cuppingsessions.domain.model.commands.CreateCuppingSessionCommand;
 import com.cafemetrix.cafelab.iam.infrastructure.authorization.sfs.support.CurrentProfileIdResolver;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 

@@ -67,7 +67,7 @@ public class ProfilesIntegrationTests {
 
         Assertions.assertEquals(HttpStatus.CREATED, response.getStatusCode());
         Assertions.assertNotNull(response.getBody());
-        Assert.assertEquals("test@test.com", response.getBody().email());
+        Assertions.assertEquals("test@test.com", response.getBody().email());
     }
 
     @Test

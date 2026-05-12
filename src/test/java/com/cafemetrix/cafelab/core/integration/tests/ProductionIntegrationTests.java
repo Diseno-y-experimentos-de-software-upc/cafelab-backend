@@ -9,7 +9,6 @@ import com.cafemetrix.cafelab.production.interfaces.acl.CoffeeproductionContextF
 import com.cafemetrix.cafelab.production.interfaces.rest.CoffeeLotsController;
 import com.cafemetrix.cafelab.production.interfaces.rest.RoastProfilesController;
 import com.cafemetrix.cafelab.production.interfaces.rest.SuppliersController;
-import com.cafemetrix.cafelab.production.interfaces.rest.resources.CoffeeLotResource;
 import com.cafemetrix.cafelab.production.interfaces.rest.resources.CreateCoffeeLotResource;
 import com.cafemetrix.cafelab.production.interfaces.rest.resources.CreateRoastProfileResource;
 import com.cafemetrix.cafelab.production.interfaces.rest.resources.CreateSupplierResource;
