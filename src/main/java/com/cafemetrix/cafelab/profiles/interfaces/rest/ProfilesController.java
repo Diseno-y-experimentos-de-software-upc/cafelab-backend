@@ -2,12 +2,14 @@ package com.cafemetrix.cafelab.profiles.interfaces.rest;
 
 import com.cafemetrix.cafelab.profiles.domain.exceptions.ProfileCreationFailedException;
 import com.cafemetrix.cafelab.profiles.domain.exceptions.ProfileNotFoundException;
+import com.cafemetrix.cafelab.profiles.domain.model.queries.CheckProfileFieldAvailabilityQuery;
 import com.cafemetrix.cafelab.profiles.domain.model.queries.GetAllProfilesQuery;
 import com.cafemetrix.cafelab.profiles.domain.model.queries.GetProfileByEmailQuery;
 import com.cafemetrix.cafelab.profiles.domain.model.queries.GetProfileByIdQuery;
 import com.cafemetrix.cafelab.profiles.domain.services.ProfileCommandService;
 import com.cafemetrix.cafelab.profiles.domain.services.ProfileQueryService;
 import com.cafemetrix.cafelab.profiles.interfaces.rest.resources.CreateProfileResource;
+import com.cafemetrix.cafelab.profiles.interfaces.rest.resources.ProfileFieldsAvailabilityResource;
 import com.cafemetrix.cafelab.profiles.interfaces.rest.resources.ProfileResource;
 import com.cafemetrix.cafelab.profiles.interfaces.rest.resources.UpdateProfileResource;
 import com.cafemetrix.cafelab.profiles.interfaces.rest.transform.CreateProfileCommandFromResourceAssembler;
@@ -92,6 +94,33 @@ public class ProfilesController {
         if (profile.isEmpty()) throw new ProfileNotFoundException(email);
         var profileResource = ProfileResourceFromEntityAssembler.toResourceFromEntity(profile.get());
         return ResponseEntity.ok(profileResource);
+    }
+
+    /**
+     * Verifica si los campos únicos (email, name, cafeteriaName) propuestos para un perfil ya están
+     * en uso por otro perfil distinto al identificado por {@code excludingUserId}. Cualquier
+     * parámetro en blanco se ignora.
+     */
+    @GetMapping("/availability")
+    @Operation(
+            summary = "Check uniqueness of email/name/cafeteriaName for a profile update",
+            description = "Returns booleans indicating which proposed values are already taken by another profile.")
+    @ApiResponses(
+            value = {@ApiResponse(responseCode = "200", description = "Availability resolved")})
+    public ResponseEntity<ProfileFieldsAvailabilityResource> checkAvailability(
+            @RequestParam(value = "excludingUserId", required = false) Long excludingUserId,
+            @RequestParam(value = "email", required = false) String email,
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "cafeteriaName", required = false) String cafeteriaName) {
+        var availability =
+                profileQueryService.handle(
+                        new CheckProfileFieldAvailabilityQuery(
+                                excludingUserId, email, name, cafeteriaName));
+        return ResponseEntity.ok(
+                new ProfileFieldsAvailabilityResource(
+                        availability.emailTaken(),
+                        availability.nameTaken(),
+                        availability.cafeteriaNameTaken()));
     }
 
     /**

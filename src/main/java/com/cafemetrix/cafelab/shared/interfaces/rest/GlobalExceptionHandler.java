@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Centralized REST exception handling (aligned with MediTrack {@code GlobalExceptionHandler} structure).
+ * Centralized REST exception handling for the application.
  *
  * <p>Bean validation errors return a structured body with {@code errors: [{ field, message }]} for the
  * frontend. {@link IllegalArgumentException} returns {@link MessageResource} to match existing API clients.</p>

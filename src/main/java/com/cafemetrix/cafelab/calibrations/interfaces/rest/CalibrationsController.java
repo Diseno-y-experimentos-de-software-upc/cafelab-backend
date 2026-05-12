@@ -1,6 +1,7 @@
 package com.cafemetrix.cafelab.calibrations.interfaces.rest;
 
 import com.cafemetrix.cafelab.calibrations.domain.exceptions.GrindCalibrationNotFoundException;
+import com.cafemetrix.cafelab.calibrations.domain.model.commands.DeleteGrindCalibrationCommand;
 import com.cafemetrix.cafelab.calibrations.domain.model.queries.GetGrindCalibrationByIdForUserQuery;
 import com.cafemetrix.cafelab.calibrations.domain.model.queries.GetGrindCalibrationsByUserIdQuery;
 import com.cafemetrix.cafelab.calibrations.domain.services.GrindCalibrationCommandService;
@@ -129,5 +130,22 @@ public class CalibrationsController {
         } catch (IllegalArgumentException ex) {
             return ResponseEntity.badRequest().body(new MessageResource(ex.getMessage()));
         }
+    }
+
+    @DeleteMapping("/{calibrationId}")
+    @Operation(summary = "Eliminar calibración (solo del propio perfil)")
+    public ResponseEntity<?> delete(@PathVariable Long calibrationId) {
+        Optional<Long> userIdOpt = resolveCurrentUserId();
+        if (userIdOpt.isEmpty()) {
+            return unauthorized("Usuario no autenticado o perfil no encontrado");
+        }
+
+        var deleted =
+                commandService.handle(
+                        new DeleteGrindCalibrationCommand(calibrationId, userIdOpt.get()));
+        if (deleted) {
+            return ResponseEntity.ok(new MessageResource("Calibración eliminada exitosamente"));
+        }
+        throw new GrindCalibrationNotFoundException(calibrationId);
     }
 }

@@ -3,11 +3,18 @@ package com.cafemetrix.cafelab.management.application.acl;
 import com.cafemetrix.cafelab.management.domain.exceptions.InsufficientCoffeeLotStockException;
 import com.cafemetrix.cafelab.management.domain.exceptions.InventoryAccessDeniedException;
 import com.cafemetrix.cafelab.management.domain.model.aggregates.InventoryEntry;
+import com.cafemetrix.cafelab.management.domain.model.aggregates.ProductionCostRecord;
+import com.cafemetrix.cafelab.management.domain.model.commands.AnnullProductionCostRecordCommand;
 import com.cafemetrix.cafelab.management.domain.model.commands.CreateInventoryEntryCommand;
+import com.cafemetrix.cafelab.management.domain.model.commands.CreateProductionCostRecordCommand;
 import com.cafemetrix.cafelab.management.domain.model.commands.DeleteInventoryEntryCommand;
+import com.cafemetrix.cafelab.management.domain.model.commands.DeleteProductionCostRecordCommand;
 import com.cafemetrix.cafelab.management.domain.model.commands.UpdateInventoryEntryCommand;
+import com.cafemetrix.cafelab.management.domain.model.commands.UpdateProductionCostRecordCommand;
 import com.cafemetrix.cafelab.management.domain.services.InventoryEntryCommandService;
 import com.cafemetrix.cafelab.management.domain.services.InventoryEntryQueryService;
+import com.cafemetrix.cafelab.management.domain.services.ProductionCostRecordCommandService;
+import com.cafemetrix.cafelab.management.domain.services.ProductionCostRecordQueryService;
 import com.cafemetrix.cafelab.management.interfaces.acl.ManagementContextFacade;
 import com.cafemetrix.cafelab.production.domain.exceptions.CoffeeLotNotFoundException;
 import com.cafemetrix.cafelab.production.domain.exceptions.CoffeeLotOwnershipException;
@@ -24,14 +31,20 @@ import java.util.Optional;
 public class ManagementContextFacadeImpl implements ManagementContextFacade {
     private final InventoryEntryCommandService inventoryEntryCommandService;
     private final InventoryEntryQueryService inventoryEntryQueryService;
+    private final ProductionCostRecordCommandService productionCostRecordCommandService;
+    private final ProductionCostRecordQueryService productionCostRecordQueryService;
     private final CoffeeproductionContextFacade coffeeproductionContextFacade;
 
     public ManagementContextFacadeImpl(
             InventoryEntryCommandService inventoryEntryCommandService,
             InventoryEntryQueryService inventoryEntryQueryService,
+            ProductionCostRecordCommandService productionCostRecordCommandService,
+            ProductionCostRecordQueryService productionCostRecordQueryService,
             CoffeeproductionContextFacade coffeeproductionContextFacade) {
         this.inventoryEntryCommandService = inventoryEntryCommandService;
         this.inventoryEntryQueryService = inventoryEntryQueryService;
+        this.productionCostRecordCommandService = productionCostRecordCommandService;
+        this.productionCostRecordQueryService = productionCostRecordQueryService;
         this.coffeeproductionContextFacade = coffeeproductionContextFacade;
     }
 
@@ -146,5 +159,67 @@ public class ManagementContextFacadeImpl implements ManagementContextFacade {
     @Override
     public Optional<InventoryEntry> getInventoryEntryById(Long inventoryEntryId) {
         return inventoryEntryQueryService.getInventoryEntryById(inventoryEntryId);
+    }
+
+    @Override
+    @Transactional
+    public Long createProductionCostRecord(CreateProductionCostRecordCommand command) {
+        return productionCostRecordCommandService
+                .handle(command)
+                .map(ProductionCostRecord::getId)
+                .orElse(0L);
+    }
+
+    @Override
+    @Transactional
+    public Long updateProductionCostRecord(Long ownerUserId, UpdateProductionCostRecordCommand command) {
+        var existing =
+                productionCostRecordQueryService.getProductionCostRecordByIdAndUserId(
+                        command.id(), ownerUserId);
+        if (existing.isEmpty()) {
+            return 0L;
+        }
+        return productionCostRecordCommandService
+                .handle(command)
+                .map(ProductionCostRecord::getId)
+                .orElse(0L);
+    }
+
+    @Override
+    @Transactional
+    public Long annullProductionCostRecord(Long ownerUserId, Long id, String reason) {
+        var existing = productionCostRecordQueryService.getProductionCostRecordByIdAndUserId(id, ownerUserId);
+        if (existing.isEmpty()) {
+            return 0L;
+        }
+        return productionCostRecordCommandService
+                .handle(new AnnullProductionCostRecordCommand(id, reason))
+                .map(ProductionCostRecord::getId)
+                .orElse(0L);
+    }
+
+    @Override
+    @Transactional
+    public boolean deleteProductionCostRecord(Long ownerUserId, Long id) {
+        var existing = productionCostRecordQueryService.getProductionCostRecordByIdAndUserId(id, ownerUserId);
+        if (existing.isEmpty()) {
+            return false;
+        }
+        return productionCostRecordCommandService.handle(new DeleteProductionCostRecordCommand(id));
+    }
+
+    @Override
+    public List<ProductionCostRecord> getProductionCostRecordsByUserId(Long userId) {
+        return productionCostRecordQueryService.getProductionCostRecordsByUserId(userId);
+    }
+
+    @Override
+    public Optional<ProductionCostRecord> getProductionCostRecordById(Long id) {
+        return productionCostRecordQueryService.getProductionCostRecordById(id);
+    }
+
+    @Override
+    public Optional<ProductionCostRecord> getProductionCostRecordByIdAndUserId(Long id, Long userId) {
+        return productionCostRecordQueryService.getProductionCostRecordByIdAndUserId(id, userId);
     }
 }

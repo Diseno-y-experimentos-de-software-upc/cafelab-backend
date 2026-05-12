@@ -1,10 +1,12 @@
 package com.cafemetrix.cafelab.profiles.domain.services;
 
 import com.cafemetrix.cafelab.profiles.domain.model.aggregates.Profile;
+import com.cafemetrix.cafelab.profiles.domain.model.queries.CheckProfileFieldAvailabilityQuery;
 import com.cafemetrix.cafelab.profiles.domain.model.queries.GetAllProfilesQuery;
 import com.cafemetrix.cafelab.profiles.domain.model.queries.GetProfileByEmailQuery;
 import com.cafemetrix.cafelab.profiles.domain.model.queries.GetProfileByIamUserIdQuery;
 import com.cafemetrix.cafelab.profiles.domain.model.queries.GetProfileByIdQuery;
+import com.cafemetrix.cafelab.profiles.domain.model.valueobjects.ProfileFieldsAvailability;
 
 import java.util.List;
 import java.util.Optional;
@@ -38,4 +40,10 @@ public interface ProfileQueryService {
      * @return A list of {@link Profile} instances
      */
     List<Profile> handle(GetAllProfilesQuery query);
+
+    /**
+     * Verifica para los campos no nulos/blancos de la query si ya están siendo usados por otro
+     * perfil distinto al identificado por {@code excludingUserId}.
+     */
+    ProfileFieldsAvailability handle(CheckProfileFieldAvailabilityQuery query);
 }

@@ -3,6 +3,7 @@ package com.cafemetrix.cafelab.management.interfaces.rest;
 import com.cafemetrix.cafelab.management.domain.exceptions.InsufficientCoffeeLotStockException;
 import com.cafemetrix.cafelab.management.domain.exceptions.InventoryAccessDeniedException;
 import com.cafemetrix.cafelab.management.domain.exceptions.InventoryEntryNotFoundException;
+import com.cafemetrix.cafelab.management.domain.exceptions.ProductionCostRecordNotFoundException;
 import com.cafemetrix.cafelab.production.domain.exceptions.CoffeeLotNotFoundException;
 import com.cafemetrix.cafelab.production.domain.exceptions.CoffeeLotOwnershipException;
 import com.cafemetrix.cafelab.shared.interfaces.rest.resources.MessageResource;
@@ -20,6 +21,12 @@ public class ManagementExceptionHandler extends CafeLabScopedExceptionHandlerSup
 
     @ExceptionHandler(InventoryEntryNotFoundException.class)
     public ResponseEntity<MessageResource> handleInventoryEntryNotFound(InventoryEntryNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResource(ex.getMessage()));
+    }
+
+    @ExceptionHandler(ProductionCostRecordNotFoundException.class)
+    public ResponseEntity<MessageResource> handleProductionCostRecordNotFound(
+            ProductionCostRecordNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResource(ex.getMessage()));
     }
 

@@ -1,10 +1,12 @@
 package com.cafemetrix.cafelab.profiles.application.internal.queryservices;
 
 import com.cafemetrix.cafelab.profiles.domain.model.aggregates.Profile;
+import com.cafemetrix.cafelab.profiles.domain.model.queries.CheckProfileFieldAvailabilityQuery;
 import com.cafemetrix.cafelab.profiles.domain.model.queries.GetAllProfilesQuery;
 import com.cafemetrix.cafelab.profiles.domain.model.queries.GetProfileByEmailQuery;
 import com.cafemetrix.cafelab.profiles.domain.model.queries.GetProfileByIamUserIdQuery;
 import com.cafemetrix.cafelab.profiles.domain.model.queries.GetProfileByIdQuery;
+import com.cafemetrix.cafelab.profiles.domain.model.valueobjects.ProfileFieldsAvailability;
 import com.cafemetrix.cafelab.profiles.domain.services.ProfileQueryService;
 import com.cafemetrix.cafelab.profiles.infrastructure.persistence.jpa.repositories.ProfileRepository;
 import org.springframework.stereotype.Service;
@@ -55,5 +57,33 @@ public class ProfileQueryServiceImpl implements ProfileQueryService {
     @Override
     public List<Profile> handle(GetAllProfilesQuery query) {
         return profileRepository.findAll();
+    }
+
+    @Override
+    public ProfileFieldsAvailability handle(CheckProfileFieldAvailabilityQuery query) {
+        Long excluding = query.excludingUserId();
+        boolean emailTaken = false;
+        boolean nameTaken = false;
+        boolean cafeteriaNameTaken = false;
+        if (isFilled(query.email())) {
+            emailTaken =
+                    profileRepository.existsByNormalizedEmailExcludingId(
+                            query.email().trim().toLowerCase(Locale.ROOT), excluding);
+        }
+        if (isFilled(query.name())) {
+            nameTaken =
+                    profileRepository.existsByNormalizedNameExcludingId(
+                            query.name().trim().toLowerCase(Locale.ROOT), excluding);
+        }
+        if (isFilled(query.cafeteriaName())) {
+            cafeteriaNameTaken =
+                    profileRepository.existsByNormalizedCafeteriaNameExcludingId(
+                            query.cafeteriaName().trim().toLowerCase(Locale.ROOT), excluding);
+        }
+        return new ProfileFieldsAvailability(emailTaken, nameTaken, cafeteriaNameTaken);
+    }
+
+    private static boolean isFilled(String value) {
+        return value != null && !value.trim().isEmpty();
     }
 }

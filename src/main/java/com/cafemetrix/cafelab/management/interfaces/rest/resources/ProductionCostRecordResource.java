@@ -1,0 +1,27 @@
+package com.cafemetrix.cafelab.management.interfaces.rest.resources;
+
+public record ProductionCostRecordResource(
+        Long id,
+        Long userId,
+        Long coffeeLotId,
+        String lotName,
+        String coffeeType,
+        String currency,
+        Double totalKg,
+        Double marginPercent,
+        Double rawMaterialsCost,
+        Double laborCost,
+        Double transportCost,
+        Double storageCost,
+        Double processingCost,
+        Double otherIndirectCosts,
+        Double totalDirectCost,
+        Double totalIndirectCost,
+        Double totalCost,
+        Double costPerKg,
+        Double suggestedPrice,
+        Double potentialMargin,
+        String status,
+        String reason,
+        String createdAt,
+        String updatedAt) {}
