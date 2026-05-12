@@ -17,6 +17,8 @@ import org.springframework.http.HttpStatus;
 
 import java.util.Optional;
 
+// US17: Registro y Autenticación de Usuario
+
 public class IamIntegrationTests {
     private UserCommandService userCommandService;
     private AuthenticationController authenticationController;
