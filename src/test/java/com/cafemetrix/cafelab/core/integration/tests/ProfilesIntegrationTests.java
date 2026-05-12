@@ -7,7 +7,6 @@ import com.cafemetrix.cafelab.profiles.domain.services.ProfileCommandService;
 import com.cafemetrix.cafelab.profiles.domain.services.ProfileQueryService;
 import com.cafemetrix.cafelab.profiles.interfaces.rest.ProfilesController;
 import com.cafemetrix.cafelab.profiles.interfaces.rest.resources.CreateProfileResource;
-import junit.framework.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
