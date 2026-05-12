@@ -21,7 +21,7 @@ import java.util.Optional;
 // US05: Cata Digital Estructurada
 // US06: Historial de Catas
 @Slf4j
-public class CuppingSeasonsIntegrationTests {
+public class CuppingSessionsIntegrationTests {
     private CuppingSessionCommandService cuppingSessionCommandService;
     private CuppingSessionQueryService cuppingSessionQueryService;
     private CuppingSessionsController cuppingSessionsController;
