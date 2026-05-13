@@ -1,6 +1,7 @@
 package com.cafemetrix.cafelab.bdd.steps;
 
 import com.cafemetrix.cafelab.defects.domain.model.aggregates.Defect;
+import com.cafemetrix.cafelab.defects.domain.model.commands.CreateDefectCommand;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
@@ -34,13 +35,13 @@ public class DefectSteps {
         var mockDefect = mock(Defect.class);
         when(mockDefect.getId()).thenReturn(40L);
         when(mockDefect.getUserId()).thenReturn((long) profileId);
-        when(shared.defectCommandService.handle(any())).thenReturn(Optional.of(mockDefect));
+        when(shared.defectCommandService.handle(any(CreateDefectCommand.class))).thenReturn(Optional.of(mockDefect));
     }
 
     @Given("un barista autenticado con perfil id {int} pero creación de defecto falla")
     public void unBaristaAutenticadoPeroCreacionDeDefectoFalla(int profileId) {
         when(shared.currentProfileIdResolver.resolveProfileId()).thenReturn(Optional.of((long) profileId));
-        when(shared.defectCommandService.handle(any())).thenReturn(Optional.empty());
+        when(shared.defectCommandService.handle(any(CreateDefectCommand.class))).thenReturn(Optional.empty());
     }
 
     @When("envía una solicitud para crear un defecto de café {string} tipo {string} peso {double} porcentaje {double}")
