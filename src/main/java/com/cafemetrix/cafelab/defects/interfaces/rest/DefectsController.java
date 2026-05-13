@@ -7,12 +7,15 @@ import com.cafemetrix.cafelab.defects.domain.services.DefectCommandService;
 import com.cafemetrix.cafelab.defects.domain.services.DefectQueryService;
 import com.cafemetrix.cafelab.defects.interfaces.rest.resources.CreateDefectResource;
 import com.cafemetrix.cafelab.defects.interfaces.rest.resources.DefectResource;
+import com.cafemetrix.cafelab.defects.domain.model.commands.DeleteDefectCommand;
 import com.cafemetrix.cafelab.defects.interfaces.rest.transform.CreateDefectCommandFromResourceAssembler;
 import com.cafemetrix.cafelab.defects.interfaces.rest.transform.DefectResourceFromEntityAssembler;
+import com.cafemetrix.cafelab.defects.interfaces.rest.transform.UpdateDefectCommandFromResourceAssembler;
 import com.cafemetrix.cafelab.iam.infrastructure.authorization.sfs.support.CurrentProfileIdResolver;
 import com.cafemetrix.cafelab.shared.interfaces.rest.resources.MessageResource;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -52,7 +55,7 @@ public class DefectsController {
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Crear registro de defecto (userId desde JWT)")
-    public ResponseEntity<?> createDefect(@RequestBody CreateDefectResource resource) {
+    public ResponseEntity<?> createDefect(@Valid @RequestBody CreateDefectResource resource) {
         Optional<Long> userIdOpt = resolveCurrentUserId();
         if (userIdOpt.isEmpty()) {
             return unauthorized("Usuario no autenticado o perfil no encontrado");
@@ -96,5 +99,42 @@ public class DefectsController {
             throw new DefectNotFoundException(defectId);
         }
         return ResponseEntity.ok(DefectResourceFromEntityAssembler.toResourceFromEntity(defect.get()));
+    }
+
+    @PutMapping(value = "/{defectId}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Actualizar registro de defecto (solo del perfil autenticado)")
+    public ResponseEntity<?> updateDefect(
+            @PathVariable Long defectId, @Valid @RequestBody CreateDefectResource resource) {
+        Optional<Long> userIdOpt = resolveCurrentUserId();
+        if (userIdOpt.isEmpty()) {
+            return unauthorized("Usuario no autenticado o perfil no encontrado");
+        }
+        try {
+            var command =
+                    UpdateDefectCommandFromResourceAssembler.toCommand(
+                            defectId, userIdOpt.get(), resource);
+            var defect = defectCommandService.handle(command);
+            if (defect.isEmpty()) {
+                throw new DefectNotFoundException(defectId);
+            }
+            return ResponseEntity.ok(DefectResourceFromEntityAssembler.toResourceFromEntity(defect.get()));
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(new MessageResource(ex.getMessage()));
+        }
+    }
+
+    @DeleteMapping("/{defectId}")
+    @Operation(summary = "Eliminar registro de defecto (solo del perfil autenticado)")
+    public ResponseEntity<Void> deleteDefect(@PathVariable Long defectId) {
+        Optional<Long> userIdOpt = resolveCurrentUserId();
+        if (userIdOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        boolean removed =
+                defectCommandService.handle(new DeleteDefectCommand(defectId, userIdOpt.get()));
+        if (!removed) {
+            throw new DefectNotFoundException(defectId);
+        }
+        return ResponseEntity.noContent().build();
     }
 }

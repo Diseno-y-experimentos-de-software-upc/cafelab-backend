@@ -11,11 +11,6 @@ public record FinalProduct(String value) {
         if (value.length() > 100) {
             throw new IllegalArgumentException("El producto final no puede tener más de 100 caracteres");
         }
-
-        if (!value.matches("^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9 .,-]+$")) {
-            throw new IllegalArgumentException("El producto final solo puede contener letras, números y espacios");
-        }
-
     }
 
     public FinalProduct() {
