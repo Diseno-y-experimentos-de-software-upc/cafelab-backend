@@ -1,10 +1,18 @@
 package com.cafemetrix.cafelab.bdd.steps;
 
+import com.cafemetrix.cafelab.calibrations.domain.services.GrindCalibrationCommandService;
+import com.cafemetrix.cafelab.calibrations.domain.services.GrindCalibrationQueryService;
 import com.cafemetrix.cafelab.cuppingsessions.domain.services.CuppingSessionCommandService;
 import com.cafemetrix.cafelab.cuppingsessions.domain.services.CuppingSessionQueryService;
+import com.cafemetrix.cafelab.defects.domain.services.DefectCommandService;
+import com.cafemetrix.cafelab.defects.domain.services.DefectQueryService;
 import com.cafemetrix.cafelab.iam.domain.services.UserCommandService;
 import com.cafemetrix.cafelab.iam.infrastructure.authorization.sfs.support.CurrentProfileIdResolver;
+import com.cafemetrix.cafelab.management.interfaces.acl.ManagementContextFacade;
+import com.cafemetrix.cafelab.preparation.interfaces.acl.PreparationContextFacade;
 import com.cafemetrix.cafelab.production.interfaces.acl.CoffeeproductionContextFacade;
+import com.cafemetrix.cafelab.profiles.domain.services.ProfileCommandService;
+import com.cafemetrix.cafelab.profiles.domain.services.ProfileQueryService;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +39,30 @@ public class SharedSteps {
 
     @Autowired
     public CuppingSessionQueryService cuppingSessionQueryService;
+
+    @Autowired
+    public DefectCommandService defectCommandService;
+
+    @Autowired
+    public DefectQueryService defectQueryService;
+
+    @Autowired
+    public PreparationContextFacade preparationContextFacade;
+
+    @Autowired
+    public GrindCalibrationCommandService grindCalibrationCommandService;
+
+    @Autowired
+    public GrindCalibrationQueryService grindCalibrationQueryService;
+
+    @Autowired
+    public ManagementContextFacade managementContextFacade;
+
+    @Autowired
+    public ProfileCommandService profileCommandService;
+
+    @Autowired
+    public ProfileQueryService profileQueryService;
 
     ResultActions lastResult;
 
