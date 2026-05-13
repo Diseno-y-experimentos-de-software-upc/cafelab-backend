@@ -1,15 +1,13 @@
 package com.cafemetrix.cafelab.bdd.steps;
 
+import com.cafemetrix.cafelab.cuppingsessions.domain.services.CuppingSessionCommandService;
+import com.cafemetrix.cafelab.cuppingsessions.domain.services.CuppingSessionQueryService;
 import com.cafemetrix.cafelab.iam.domain.services.UserCommandService;
 import com.cafemetrix.cafelab.iam.infrastructure.authorization.sfs.support.CurrentProfileIdResolver;
 import com.cafemetrix.cafelab.production.interfaces.acl.CoffeeproductionContextFacade;
-import com.cafemetrix.cafelab.cuppingsessions.domain.services.CuppingSessionCommandService;
-import com.cafemetrix.cafelab.cuppingsessions.domain.services.CuppingSessionQueryService;
-import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.Optional;
@@ -19,19 +17,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class SharedSteps {
 
-    @MockBean
+    @Autowired
     public UserCommandService userCommandService;
 
-    @MockBean
-    public CoffeeproductionContextFacade facade;
+    @Autowired
+    public CoffeeproductionContextFacade coffeeproductionContextFacade;
 
-    @MockBean
+    @Autowired
     public CurrentProfileIdResolver currentProfileIdResolver;
 
-    @MockBean
+    @Autowired
     public CuppingSessionCommandService cuppingSessionCommandService;
 
-    @MockBean
+    @Autowired
     public CuppingSessionQueryService cuppingSessionQueryService;
 
     ResultActions lastResult;

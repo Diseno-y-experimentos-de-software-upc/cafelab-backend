@@ -1,6 +1,7 @@
 package com.cafemetrix.cafelab.bdd.steps;
 
 import com.cafemetrix.cafelab.production.domain.model.aggregates.CoffeeLot;
+import com.cafemetrix.cafelab.production.domain.model.aggregates.RoastProfile;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
@@ -36,16 +37,20 @@ public class RoastProfileSteps {
         when(shared.currentProfileIdResolver.resolveProfileId()).thenReturn(Optional.of((long) profileId));
         var mockLot = mock(CoffeeLot.class);
         when(mockLot.getUserId()).thenReturn((long) profileId);
-        when(shared.facade.getCoffeeLotById(this.lotId)).thenReturn(Optional.of(mockLot));
-        when(shared.facade.createRoastProfile(anyLong(), anyString(), anyString(), anyInt(), anyDouble(), anyDouble(), anyLong(), anyBoolean()))
+        when(shared.coffeeproductionContextFacade.getCoffeeLotById(this.lotId)).thenReturn(Optional.of(mockLot));
+        when(shared.coffeeproductionContextFacade.createRoastProfile(anyLong(), anyString(), anyString(), anyInt(), anyDouble(), anyDouble(), anyLong(), anyBoolean()))
                 .thenReturn(10L);
+        var mockProfile = mock(RoastProfile.class);
+        when(mockProfile.getId()).thenReturn(10L);
+        when(mockProfile.getUserId()).thenReturn((long) profileId);
+        when(shared.coffeeproductionContextFacade.getRoastProfileById(10L)).thenReturn(Optional.of(mockProfile));
     }
 
     @Given("un barista autenticado con perfil id {int} pero sin acceso al lote id {int}")
     public void unBaristaAutenticadoPeroSinAccesoAlLote(int profileId, int lotId) {
         this.lotId = (long) lotId;
         when(shared.currentProfileIdResolver.resolveProfileId()).thenReturn(Optional.of((long) profileId));
-        when(shared.facade.getCoffeeLotById(this.lotId)).thenReturn(Optional.empty());
+        when(shared.coffeeproductionContextFacade.getCoffeeLotById(this.lotId)).thenReturn(Optional.empty());
     }
 
     @When("envía una solicitud para crear un perfil con nombre {string} tipo {string} duración {int} tempInicio {double} tempFin {double}")
@@ -54,14 +59,15 @@ public class RoastProfileSteps {
                 "name", nombre,
                 "type", tipo,
                 "duration", duracion,
-                "tempStart", tempInicio,
-                "tempEnd", tempFin,
+                "tempStart", (int) tempInicio,
+                "tempEnd", (int) tempFin,
                 "lot", lotId != null ? lotId : 99L,
                 "isFavorite", false
         );
         shared.lastResult = mockMvc.perform(post("/api/v1/roast-profile")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(body)));
+                .content(objectMapper.writeValueAsString(body)))
+                .andDo(org.springframework.test.web.servlet.result.MockMvcResultHandlers.print());
     }
 
     @And("la respuesta contiene el id del perfil de tueste creado")

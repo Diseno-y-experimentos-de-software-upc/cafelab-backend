@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.When;
-import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -41,7 +41,7 @@ public class AuthenticationSteps {
         var mockUser = new User(email, "hashed", null);
         when(shared.userCommandService.handle(any(SignUpCommand.class))).thenReturn(Optional.of(mockUser));
         when(shared.userCommandService.handle(any(SignInCommand.class)))
-                .thenReturn(Optional.of(Pair.of(mockUser, "mock-jwt-token")));
+                .thenReturn(Optional.of(ImmutablePair.of(mockUser, "mock-jwt-token")));
     }
 
     @Given("un usuario registrado con email {string} y contraseña {string}")
@@ -50,7 +50,7 @@ public class AuthenticationSteps {
         this.password = password;
         var mockUser = new User(email, "hashed", null);
         when(shared.userCommandService.handle(any(SignInCommand.class)))
-                .thenReturn(Optional.of(Pair.of(mockUser, "mock-jwt-token")));
+                .thenReturn(Optional.of(ImmutablePair.of(mockUser, "mock-jwt-token")));
     }
 
     @Given("un usuario no registrado con email {string} y contraseña {string}")
