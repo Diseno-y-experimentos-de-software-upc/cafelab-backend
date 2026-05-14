@@ -50,7 +50,8 @@ public class DefectCommandServiceImpl implements DefectCommandService {
                 .findByIdAndUserId(command.defectId(), command.userId())
                 .map(
                         entity -> {
-                            defectRepository.delete(entity);
+                            entity.softDelete();
+                            defectRepository.save(entity);
                             return true;
                         })
                 .orElse(false);

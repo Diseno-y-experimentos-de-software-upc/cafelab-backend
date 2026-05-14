@@ -6,11 +6,13 @@ import com.cafemetrix.cafelab.management.domain.model.valueobjects.*;
 import com.cafemetrix.cafelab.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
 import jakarta.persistence.*;
 import lombok.Getter;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
 
 /** Entrada de inventario; {@code userId} persiste en {@code user_id} (FK a profiles.id). */
 @Entity
+@SQLRestriction("deleted_at IS NULL")
 @Table(name = "inventory_entries")
 public class InventoryEntry extends AuditableAbstractAggregateRoot<InventoryEntry> {
 

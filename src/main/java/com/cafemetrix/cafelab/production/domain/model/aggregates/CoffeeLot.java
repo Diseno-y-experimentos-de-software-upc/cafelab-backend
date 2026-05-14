@@ -6,13 +6,15 @@ import com.cafemetrix.cafelab.production.domain.model.valueobjects.*;
 import com.cafemetrix.cafelab.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
 import jakarta.persistence.*;
 import lombok.Getter;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /** Lote; {@code userId} persiste en {@code user_id} (FK a profiles.id). */
 @Entity
-@Table(name = "coffee_lots")
+@SQLRestriction("deleted_at IS NULL")
+@Table(name = "coffee_lots", uniqueConstraints = @UniqueConstraint(columnNames = {"lot_name", "user_id"}))
 public class CoffeeLot extends AuditableAbstractAggregateRoot<CoffeeLot> {
 
     @Getter

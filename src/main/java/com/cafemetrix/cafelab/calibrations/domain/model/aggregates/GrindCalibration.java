@@ -5,6 +5,7 @@ import com.cafemetrix.cafelab.calibrations.domain.model.commands.UpdateGrindCali
 import com.cafemetrix.cafelab.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
 import jakarta.persistence.*;
 import lombok.Getter;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDate;
 
@@ -12,6 +13,7 @@ import java.time.LocalDate;
  * Registro de calibración de molienda: sin vínculos a lotes ni perfiles de tueste; ámbito por {@code userId}.
  */
 @Entity
+@SQLRestriction("deleted_at IS NULL")
 public class GrindCalibration extends AuditableAbstractAggregateRoot<GrindCalibration> {
 
     @Getter

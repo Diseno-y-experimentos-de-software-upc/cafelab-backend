@@ -45,7 +45,8 @@ public class GrindCalibrationCommandServiceImpl implements GrindCalibrationComma
                 .findByIdAndUserId(command.calibrationId(), command.userId())
                 .map(
                         entity -> {
-                            repository.delete(entity);
+                            entity.softDelete();
+                            repository.save(entity);
                             return true;
                         })
                 .orElse(false);

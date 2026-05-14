@@ -9,8 +9,10 @@ import com.cafemetrix.cafelab.defects.domain.model.valueobjects.SuggestedSolutio
 import com.cafemetrix.cafelab.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
 import jakarta.persistence.*;
 import lombok.Getter;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
+@SQLRestriction("deleted_at IS NULL")
 public class Defect extends AuditableAbstractAggregateRoot<Defect> {
 
     @Getter

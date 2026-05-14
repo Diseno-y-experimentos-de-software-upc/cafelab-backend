@@ -5,10 +5,12 @@ import com.cafemetrix.cafelab.cuppingsessions.domain.model.commands.UpdateCuppin
 import com.cafemetrix.cafelab.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
 import jakarta.persistence.*;
 import lombok.Getter;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDate;
 
 @Entity
+@SQLRestriction("deleted_at IS NULL")
 public class CuppingSession extends AuditableAbstractAggregateRoot<CuppingSession> {
 
     @Getter

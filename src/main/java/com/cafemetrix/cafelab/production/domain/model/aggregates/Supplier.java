@@ -8,13 +8,15 @@ import com.cafemetrix.cafelab.production.domain.model.valueobjects.SupplierName;
 import com.cafemetrix.cafelab.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
 import jakarta.persistence.*;
 import lombok.Getter;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /** Proveedor; {@code userId} persiste en {@code user_id} (FK a profiles.id). */
 @Entity
-@Table(name = "suppliers")
+@SQLRestriction("deleted_at IS NULL")
+@Table(name = "suppliers", uniqueConstraints = @UniqueConstraint(columnNames = {"name", "user_id"}))
 public class Supplier extends AuditableAbstractAggregateRoot<Supplier> {
 
     @Getter

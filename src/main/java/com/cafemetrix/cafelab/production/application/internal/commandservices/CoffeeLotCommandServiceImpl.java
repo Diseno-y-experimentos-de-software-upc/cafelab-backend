@@ -20,9 +20,15 @@ public class CoffeeLotCommandServiceImpl implements CoffeeLotCommandService {
 
     @Override
     public Optional<CoffeeLot> handle(CreateCoffeeLotCommand command) {
+        if (coffeeLotRepository.existsByLotNameValueAndUserId(command.lotName(), command.userId())) {
+            throw new IllegalArgumentException(
+                    "Ya existe un lote con el nombre \"" + command.lotName() + "\". Use un nombre diferente.");
+        }
         try {
             var coffeeLot = new CoffeeLot(command);
             return Optional.of(coffeeLotRepository.save(coffeeLot));
+        } catch (IllegalArgumentException e) {
+            throw e;
         } catch (Exception e) {
             return Optional.empty();
         }
@@ -30,14 +36,21 @@ public class CoffeeLotCommandServiceImpl implements CoffeeLotCommandService {
 
     @Override
     public Optional<CoffeeLot> handle(UpdateCoffeeLotCommand command) {
-        try {
-            var existingCoffeeLot = coffeeLotRepository.findById(command.coffeeLotId());
-            if (existingCoffeeLot.isPresent()) {
-                var coffeeLot = existingCoffeeLot.get();
-                coffeeLot.update(command);
-                return Optional.of(coffeeLotRepository.save(coffeeLot));
-            }
+        var existingCoffeeLot = coffeeLotRepository.findById(command.coffeeLotId());
+        if (existingCoffeeLot.isEmpty()) {
             return Optional.empty();
+        }
+        Long userId = existingCoffeeLot.get().getUserId();
+        if (coffeeLotRepository.existsByLotNameAndUserIdExcluding(command.lotName(), userId, command.coffeeLotId())) {
+            throw new IllegalArgumentException(
+                    "Ya existe un lote con el nombre \"" + command.lotName() + "\". Use un nombre diferente.");
+        }
+        try {
+            var coffeeLot = existingCoffeeLot.get();
+            coffeeLot.update(command);
+            return Optional.of(coffeeLotRepository.save(coffeeLot));
+        } catch (IllegalArgumentException e) {
+            throw e;
         } catch (Exception e) {
             return Optional.empty();
         }
@@ -45,14 +58,12 @@ public class CoffeeLotCommandServiceImpl implements CoffeeLotCommandService {
 
     @Override
     public boolean handle(DeleteCoffeeLotCommand command) {
-        try {
-            if (coffeeLotRepository.existsById(command.coffeeLotId())) {
-                coffeeLotRepository.deleteById(command.coffeeLotId());
-                return true;
-            }
-            return false;
-        } catch (Exception e) {
+        var coffeeLot = coffeeLotRepository.findById(command.coffeeLotId());
+        if (coffeeLot.isEmpty()) {
             return false;
         }
+        coffeeLot.get().softDelete();
+        coffeeLotRepository.save(coffeeLot.get());
+        return true;
     }
 }
