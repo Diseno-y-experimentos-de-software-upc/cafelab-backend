@@ -8,9 +8,9 @@ public class CreateDefectCommandFromResourceAssembler {
     public static CreateDefectCommand toCommandFromResource(Long userId, CreateDefectResource resource) {
         return new CreateDefectCommand(
                 userId,
-                resource.coffeeDisplayName(),
+                resource.coffeeDisplayName().trim(),
                 blankToNull(resource.coffeeRegion()),
-                blankToNull(resource.coffeeVariety()),
+                resource.coffeeVariety().trim(),
                 resource.coffeeTotalWeight(),
                 resource.name(),
                 resource.defectType(),

@@ -2,6 +2,7 @@ package com.cafemetrix.cafelab.calibrations.application.internal.commandservices
 
 import com.cafemetrix.cafelab.calibrations.domain.model.aggregates.GrindCalibration;
 import com.cafemetrix.cafelab.calibrations.domain.model.commands.CreateGrindCalibrationCommand;
+import com.cafemetrix.cafelab.calibrations.domain.model.commands.DeleteGrindCalibrationCommand;
 import com.cafemetrix.cafelab.calibrations.domain.model.commands.UpdateGrindCalibrationCommand;
 import com.cafemetrix.cafelab.calibrations.domain.services.GrindCalibrationCommandService;
 import com.cafemetrix.cafelab.calibrations.infrastructure.persistence.jpa.repositories.GrindCalibrationRepository;
@@ -35,5 +36,19 @@ public class GrindCalibrationCommandServiceImpl implements GrindCalibrationComma
                             entity.applyUpdate(command);
                             return repository.save(entity);
                         });
+    }
+
+    @Override
+    @Transactional
+    public boolean handle(DeleteGrindCalibrationCommand command) {
+        return repository
+                .findByIdAndUserId(command.calibrationId(), command.userId())
+                .map(
+                        entity -> {
+                            entity.softDelete();
+                            repository.save(entity);
+                            return true;
+                        })
+                .orElse(false);
     }
 }

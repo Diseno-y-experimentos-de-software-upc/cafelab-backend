@@ -40,7 +40,8 @@ public class InventoryEntryCommandServiceImpl implements InventoryEntryCommandSe
     public boolean handle(DeleteInventoryEntryCommand command) {
         var inventoryEntry = inventoryEntryRepository.findById(command.inventoryEntryId());
         if (inventoryEntry.isPresent()) {
-            inventoryEntryRepository.deleteById(command.inventoryEntryId());
+            inventoryEntry.get().softDelete();
+            inventoryEntryRepository.save(inventoryEntry.get());
             return true;
         }
         return false;

@@ -6,11 +6,13 @@ import com.cafemetrix.cafelab.management.domain.model.valueobjects.*;
 import com.cafemetrix.cafelab.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
 import jakarta.persistence.*;
 import lombok.Getter;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
 
 /** Entrada de inventario; {@code userId} persiste en {@code user_id} (FK a profiles.id). */
 @Entity
+@SQLRestriction("deleted_at IS NULL")
 @Table(name = "inventory_entries")
 public class InventoryEntry extends AuditableAbstractAggregateRoot<InventoryEntry> {
 
@@ -45,7 +47,6 @@ public class InventoryEntry extends AuditableAbstractAggregateRoot<InventoryEntr
 
     public InventoryEntry(CreateInventoryEntryCommand command) {
         validateDateUsed(command.dateUsed());
-
         this.userId = command.userId();
         this.coffeeLotId = command.coffeeLotId();
         this.quantityUsed = command.quantityUsed();
@@ -60,6 +61,7 @@ public class InventoryEntry extends AuditableAbstractAggregateRoot<InventoryEntr
         this.finalProduct = new FinalProduct(command.finalProduct());
         return this;
     }
+
 
     private void validateDateUsed(LocalDateTime dateUsed) {
         if (dateUsed == null) {

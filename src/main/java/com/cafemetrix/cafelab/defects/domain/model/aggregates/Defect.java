@@ -1,6 +1,7 @@
 package com.cafemetrix.cafelab.defects.domain.model.aggregates;
 
 import com.cafemetrix.cafelab.defects.domain.model.commands.CreateDefectCommand;
+import com.cafemetrix.cafelab.defects.domain.model.commands.UpdateDefectCommand;
 import com.cafemetrix.cafelab.defects.domain.model.valueobjects.DefectName;
 import com.cafemetrix.cafelab.defects.domain.model.valueobjects.DefectType;
 import com.cafemetrix.cafelab.defects.domain.model.valueobjects.ProbableCause;
@@ -8,8 +9,10 @@ import com.cafemetrix.cafelab.defects.domain.model.valueobjects.SuggestedSolutio
 import com.cafemetrix.cafelab.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
 import jakarta.persistence.*;
 import lombok.Getter;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
+@SQLRestriction("deleted_at IS NULL")
 public class Defect extends AuditableAbstractAggregateRoot<Defect> {
 
     @Getter
@@ -86,5 +89,19 @@ public class Defect extends AuditableAbstractAggregateRoot<Defect> {
 
     public String getSuggestedSolution() {
         return suggestedSolution.value();
+    }
+
+    /** Actualiza todos los campos editables (mismo contrato que alta). */
+    public void applyUpdate(UpdateDefectCommand command) {
+        this.coffeeDisplayName = command.coffeeDisplayName().trim();
+        this.coffeeRegion = command.coffeeRegion();
+        this.coffeeVariety = command.coffeeVariety() != null ? command.coffeeVariety().trim() : null;
+        this.coffeeTotalWeight = command.coffeeTotalWeight();
+        this.name = new DefectName(command.name());
+        this.defectType = new DefectType(command.defectType());
+        this.defectWeight = command.defectWeight();
+        this.percentage = command.percentage();
+        this.probableCause = new ProbableCause(command.probableCause());
+        this.suggestedSolution = new SuggestedSolution(command.suggestedSolution());
     }
 }

@@ -20,9 +20,15 @@ public class SupplierCommandServiceImpl implements SupplierCommandService {
 
     @Override
     public Optional<Supplier> handle(CreateSupplierCommand command) {
+        if (supplierRepository.existsByNameValueAndUserId(command.name(), command.userId())) {
+            throw new IllegalArgumentException(
+                    "Ya existe un proveedor con el nombre \"" + command.name() + "\". Use un nombre diferente.");
+        }
         try {
             var supplier = new Supplier(command);
             return Optional.of(supplierRepository.save(supplier));
+        } catch (IllegalArgumentException e) {
+            throw e;
         } catch (Exception e) {
             return Optional.empty();
         }
@@ -30,14 +36,21 @@ public class SupplierCommandServiceImpl implements SupplierCommandService {
 
     @Override
     public Optional<Supplier> handle(UpdateSupplierCommand command) {
-        try {
-            var existingSupplier = supplierRepository.findById(command.supplierId());
-            if (existingSupplier.isPresent()) {
-                var supplier = existingSupplier.get();
-                supplier.update(command);
-                return Optional.of(supplierRepository.save(supplier));
-            }
+        var existingSupplier = supplierRepository.findById(command.supplierId());
+        if (existingSupplier.isEmpty()) {
             return Optional.empty();
+        }
+        Long userId = existingSupplier.get().getUserId();
+        if (supplierRepository.existsByNameAndUserIdExcluding(command.name(), userId, command.supplierId())) {
+            throw new IllegalArgumentException(
+                    "Ya existe un proveedor con el nombre \"" + command.name() + "\". Use un nombre diferente.");
+        }
+        try {
+            var supplier = existingSupplier.get();
+            supplier.update(command);
+            return Optional.of(supplierRepository.save(supplier));
+        } catch (IllegalArgumentException e) {
+            throw e;
         } catch (Exception e) {
             return Optional.empty();
         }
@@ -45,14 +58,12 @@ public class SupplierCommandServiceImpl implements SupplierCommandService {
 
     @Override
     public boolean handle(DeleteSupplierCommand command) {
-        try {
-            if (supplierRepository.existsById(command.supplierId())) {
-                supplierRepository.deleteById(command.supplierId());
-                return true;
-            }
-            return false;
-        } catch (Exception e) {
+        var supplier = supplierRepository.findById(command.supplierId());
+        if (supplier.isEmpty()) {
             return false;
         }
+        supplier.get().softDelete();
+        supplierRepository.save(supplier.get());
+        return true;
     }
 }

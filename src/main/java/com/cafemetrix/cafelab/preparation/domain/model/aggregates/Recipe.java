@@ -6,11 +6,14 @@ import com.cafemetrix.cafelab.preparation.domain.model.valueobjects.*;
 import com.cafemetrix.cafelab.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
 import jakarta.persistence.*;
 import lombok.Getter;
+import org.hibernate.annotations.SQLRestriction;
 
 /**
  * Receta de preparación; {@code userId} persiste en columna {@code user_id} (FK a profiles.id).
  */
 @Entity
+@SQLRestriction("deleted_at IS NULL")
+@Table(name = "recipes", uniqueConstraints = @UniqueConstraint(columnNames = {"name", "user_id"}))
 public class Recipe extends AuditableAbstractAggregateRoot<Recipe> {
 
     @Getter

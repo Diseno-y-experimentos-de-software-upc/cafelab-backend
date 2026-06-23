@@ -34,6 +34,10 @@ public class RecipeCommandServiceImpl implements RecipeCommandService {
 
     @Override
     public Optional<Recipe> handle(CreateRecipeCommand command) {
+        if (recipeRepository.existsByNameValueAndUserId(command.name(), command.userId())) {
+            throw new IllegalArgumentException(
+                    "Ya existe una receta con el nombre \"" + command.name() + "\". Use un nombre diferente.");
+        }
         assertCuppingSessionBelongsToUser(command.userId(), command.cuppingSessionId());
         assertPortfolioBelongsToUser(command.userId(), command.portfolioId());
         try {
@@ -54,6 +58,10 @@ public class RecipeCommandServiceImpl implements RecipeCommandService {
         if (existing.isEmpty()) {
             return Optional.empty();
         }
+        if (recipeRepository.existsByNameAndUserIdExcluding(command.name(), command.userId(), command.recipeId())) {
+            throw new IllegalArgumentException(
+                    "Ya existe una receta con el nombre \"" + command.name() + "\". Use un nombre diferente.");
+        }
         assertCuppingSessionBelongsToUser(command.userId(), command.cuppingSessionId());
         assertPortfolioBelongsToUser(command.userId(), command.portfolioId());
         try {
@@ -70,17 +78,13 @@ public class RecipeCommandServiceImpl implements RecipeCommandService {
 
     @Override
     public boolean handle(DeleteRecipeCommand command) {
-        try {
-            var existing = recipeRepository.findByIdAndUserId(command.recipeId(), command.userId());
-            if (existing.isEmpty()) {
-                return false;
-            }
-            ingredientRepository.deleteAll(ingredientRepository.findByRecipeId(command.recipeId()));
-            recipeRepository.deleteById(command.recipeId());
-            return true;
-        } catch (Exception e) {
+        var existing = recipeRepository.findByIdAndUserId(command.recipeId(), command.userId());
+        if (existing.isEmpty()) {
             return false;
         }
+        existing.get().softDelete();
+        recipeRepository.save(existing.get());
+        return true;
     }
 
     private void assertCuppingSessionBelongsToUser(Long userId, Long cuppingSessionId) {

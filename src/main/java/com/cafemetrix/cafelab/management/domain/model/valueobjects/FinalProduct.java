@@ -15,7 +15,6 @@ public record FinalProduct(String value) {
         if (!value.matches("^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9 .,-]+$")) {
             throw new IllegalArgumentException("El producto final solo puede contener letras, números y espacios");
         }
-
     }
 
     public FinalProduct() {

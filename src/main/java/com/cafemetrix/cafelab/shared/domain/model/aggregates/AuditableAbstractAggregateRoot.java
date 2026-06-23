@@ -7,6 +7,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.domain.AbstractAggregateRoot;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -30,6 +31,18 @@ public abstract class AuditableAbstractAggregateRoot<T extends AbstractAggregate
     @LastModifiedDate
     @Column(nullable = false)
     private Date updatedAt;
+
+    @Getter
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
+    public void softDelete() {
+        this.deletedAt = LocalDateTime.now();
+    }
+
+    public boolean isDeleted() {
+        return this.deletedAt != null;
+    }
 
     /**
      * Register a domain event.

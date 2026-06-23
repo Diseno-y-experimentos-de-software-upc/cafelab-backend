@@ -58,7 +58,8 @@ public class CuppingSessionCommandServiceImpl implements CuppingSessionCommandSe
                 .findByIdAndUserId(sessionId, userId)
                 .map(
                         entity -> {
-                            repository.delete(entity);
+                            entity.softDelete();
+                            repository.save(entity);
                             return true;
                         })
                 .orElse(false);
