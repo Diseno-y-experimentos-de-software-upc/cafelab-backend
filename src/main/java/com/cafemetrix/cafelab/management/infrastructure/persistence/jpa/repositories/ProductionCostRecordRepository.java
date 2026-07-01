@@ -12,4 +12,7 @@ public interface ProductionCostRecordRepository extends JpaRepository<Production
     List<ProductionCostRecord> findByUserIdOrderByCreatedAtDesc(Long userId);
 
     Optional<ProductionCostRecord> findByIdAndUserId(Long id, Long userId);
+
+    List<ProductionCostRecord> findByCoffeeLotIdAndUserIdAndStatusNotOrderByCreatedAtDesc(
+            Long coffeeLotId, Long userId, String status);
 }
