@@ -42,8 +42,8 @@ Este bounded context maneja las operaciones de inventario y gestión de recursos
 - `quantityUsed`: Cantidad utilizada
 - `dateUsed`: Fecha de uso
 - `finalProduct`: Campo legado; si no se envia, se completa con el motivo
-- `motivoDeConsumo`: Motivo trazable del consumo (`barra`, `retail`, `muestras`, `otro`)
-- `notasDeUso`: Notas opcionales del consumo
+- `consumptionReason`: Motivo trazable del consumo (`bar`, `retail`, `samples`, `other`)
+- `usageNotes`: Notas opcionales del consumo
 - `createdAt`: Fecha de creación
 - `updatedAt`: Fecha de última actualización
 
@@ -51,8 +51,8 @@ Este bounded context maneja las operaciones de inventario y gestión de recursos
 
 - Todos los campos son obligatorios
 - `quantityUsed` debe ser mayor a 0
-- `motivoDeConsumo` debe ser `barra`, `retail`, `muestras` u `otro`
-- `notasDeUso` no puede exceder 1000 caracteres
+- `consumptionReason` debe ser `bar`, `retail`, `samples` u `other`
+- `usageNotes` no puede exceder 1000 caracteres
 - `userId` y `coffeeLotId` deben ser IDs válidos existentes
 
 ## Dependencias

@@ -29,12 +29,12 @@ public record CreateInventoryEntryResource(
 
         @NotBlank(message = "El motivo de consumo es obligatorio")
         @Size(max = 50, message = "El motivo de consumo no puede superar 50 caracteres")
-        String motivoDeConsumo,
+        String consumptionReason,
 
         @Size(max = 1000, message = "Las notas de uso no pueden superar 1000 caracteres")
-        String notasDeUso) {
+        String usageNotes) {
 
     public CreateInventoryEntryResource {
-        finalProduct = finalProduct == null || finalProduct.isBlank() ? motivoDeConsumo : finalProduct;
+        finalProduct = finalProduct == null || finalProduct.isBlank() ? consumptionReason : finalProduct;
     }
 }

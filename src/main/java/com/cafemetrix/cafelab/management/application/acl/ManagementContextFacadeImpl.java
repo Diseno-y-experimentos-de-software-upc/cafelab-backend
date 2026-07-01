@@ -65,8 +65,8 @@ public class ManagementContextFacadeImpl implements ManagementContextFacade {
             Double quantityUsed,
             LocalDateTime dateUsed,
             String finalProduct,
-            String motivoDeConsumo,
-            String notasDeUso) {
+            String consumptionReason,
+            String usageNotes) {
         var existingOpt = inventoryEntryQueryService.getInventoryEntryById(inventoryEntryId);
         if (existingOpt.isEmpty()) {
             return 0L;
@@ -84,8 +84,8 @@ public class ManagementContextFacadeImpl implements ManagementContextFacade {
                         quantityUsed,
                         dateUsed,
                         finalProduct,
-                        motivoDeConsumo,
-                        notasDeUso);
+                        consumptionReason,
+                        usageNotes);
         var result = inventoryEntryCommandService.handle(command);
         return result.map(InventoryEntry::getId).orElse(0L);
     }

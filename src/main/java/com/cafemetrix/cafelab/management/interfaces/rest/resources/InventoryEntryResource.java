@@ -10,6 +10,6 @@ public record InventoryEntryResource(
     Double quantityUsed,
     LocalDateTime dateUsed,
     String finalProduct,
-    String motivoDeConsumo,
-    String notasDeUso
+    String consumptionReason,
+    String usageNotes
 ) {}

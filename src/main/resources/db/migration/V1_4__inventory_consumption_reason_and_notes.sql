@@ -1,10 +1,10 @@
 ALTER TABLE inventory_entries
-    ADD COLUMN IF NOT EXISTS motivo_de_consumo VARCHAR(50) NULL,
-    ADD COLUMN IF NOT EXISTS notas_de_uso TEXT NULL;
+    ADD COLUMN IF NOT EXISTS consumption_reason VARCHAR(50) NULL,
+    ADD COLUMN IF NOT EXISTS usage_notes TEXT NULL;
 
 UPDATE inventory_entries
-SET motivo_de_consumo = COALESCE(NULLIF(final_product, ''), 'otro')
-WHERE motivo_de_consumo IS NULL;
+SET consumption_reason = COALESCE(NULLIF(final_product, ''), 'other')
+WHERE consumption_reason IS NULL;
 
 ALTER TABLE inventory_entries
-    MODIFY COLUMN motivo_de_consumo VARCHAR(50) NOT NULL;
+    MODIFY COLUMN consumption_reason VARCHAR(50) NOT NULL;

@@ -74,8 +74,8 @@ public class InventoryEntriesController {
                 entry.getQuantityUsed(),
                 entry.getDateUsed(),
                 entry.getFinalProduct(),
-                entry.getMotivoDeConsumo(),
-                entry.getNotasDeUso());
+                entry.getConsumptionReason(),
+                entry.getUsageNotes());
     }
 
     @Operation(summary = "Registrar consumo (perfil desde JWT; descuenta stock del lote)")
@@ -183,8 +183,8 @@ public class InventoryEntriesController {
                         command.quantityUsed(),
                         command.dateUsed(),
                         command.finalProduct(),
-                        command.motivoDeConsumo(),
-                        command.notasDeUso());
+                        command.consumptionReason(),
+                        command.usageNotes());
         if (updatedId == 0L) {
             throw new InventoryEntryNotFoundException(inventoryEntryId);
         }

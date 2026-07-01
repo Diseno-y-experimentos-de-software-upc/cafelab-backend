@@ -14,7 +14,7 @@ public final class CreateInventoryEntryCommandFromResourceAssembler {
                 resource.quantityUsed(),
                 resource.dateUsed(),
                 resource.finalProduct(),
-                resource.motivoDeConsumo(),
-                resource.notasDeUso());
+                resource.consumptionReason(),
+                resource.usageNotes());
     }
 }

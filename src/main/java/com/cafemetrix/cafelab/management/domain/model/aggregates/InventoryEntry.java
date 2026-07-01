@@ -35,24 +35,24 @@ public class InventoryEntry extends AuditableAbstractAggregateRoot<InventoryEntr
     private FinalProduct finalProduct;
 
     @Getter
-    @Column(name = "motivo_de_consumo", nullable = false, length = 50)
-    private String motivoDeConsumo;
+    @Column(name = "consumption_reason", nullable = false, length = 50)
+    private String consumptionReason;
 
     @Getter
-    @Column(name = "notas_de_uso", columnDefinition = "TEXT")
-    private String notasDeUso;
+    @Column(name = "usage_notes", columnDefinition = "TEXT")
+    private String usageNotes;
 
     public InventoryEntry() {}
 
     public InventoryEntry(Long userId, Long coffeeLotId, Double quantityUsed, 
-                         LocalDateTime dateUsed, String finalProduct, String motivoDeConsumo, String notasDeUso) {
+                         LocalDateTime dateUsed, String finalProduct, String consumptionReason, String usageNotes) {
         this.userId = userId;
         this.coffeeLotId = coffeeLotId;
         this.quantityUsed = quantityUsed;
         this.dateUsed = dateUsed;
         this.finalProduct = new FinalProduct(finalProduct);
-        this.motivoDeConsumo = motivoDeConsumo;
-        this.notasDeUso = notasDeUso;
+        this.consumptionReason = consumptionReason;
+        this.usageNotes = usageNotes;
     }
 
     public InventoryEntry(CreateInventoryEntryCommand command) {
@@ -62,8 +62,8 @@ public class InventoryEntry extends AuditableAbstractAggregateRoot<InventoryEntr
         this.quantityUsed = command.quantityUsed();
         this.dateUsed = command.dateUsed();
         this.finalProduct = new FinalProduct(command.finalProduct());
-        this.motivoDeConsumo = command.motivoDeConsumo();
-        this.notasDeUso = command.notasDeUso();
+        this.consumptionReason = command.consumptionReason();
+        this.usageNotes = command.usageNotes();
     }
 
     public InventoryEntry update(UpdateInventoryEntryCommand command) {
@@ -71,8 +71,8 @@ public class InventoryEntry extends AuditableAbstractAggregateRoot<InventoryEntr
         this.quantityUsed = command.quantityUsed();
         this.dateUsed = command.dateUsed();
         this.finalProduct = new FinalProduct(command.finalProduct());
-        this.motivoDeConsumo = command.motivoDeConsumo();
-        this.notasDeUso = command.notasDeUso();
+        this.consumptionReason = command.consumptionReason();
+        this.usageNotes = command.usageNotes();
         return this;
     }
 
