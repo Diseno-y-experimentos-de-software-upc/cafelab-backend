@@ -52,7 +52,9 @@ public class SuppliersController {
                         supplier.getEmail(),
                         supplier.getPhone(),
                         supplier.getLocation(),
-                        supplier.getSpecialties()))
+                        supplier.getSpecialties(),
+                        supplier.getContactPerson(),
+                        supplier.getWebLink()))
                 .collect(Collectors.toList());
     }
 
@@ -74,7 +76,8 @@ public class SuppliersController {
         Long ownerId = ownerIdOpt.get();
         var supplierId = coffeeproductionContextFacade.createSupplier(
                 ownerId, resource.name(), resource.email(),
-                resource.phone(), resource.location(), resource.specialties());
+                resource.phone(), resource.location(), resource.specialties(),
+                resource.contactPerson(), resource.webLink());
 
         if (supplierId == 0L) {
             return ResponseEntity.badRequest()
@@ -98,7 +101,9 @@ public class SuppliersController {
                 supplier.get().getEmail(),
                 supplier.get().getPhone(),
                 supplier.get().getLocation(),
-                supplier.get().getSpecialties());
+                supplier.get().getSpecialties(),
+                supplier.get().getContactPerson(),
+                supplier.get().getWebLink());
 
         return new ResponseEntity<>(supplierResource, HttpStatus.CREATED);
     }
@@ -154,7 +159,9 @@ public class SuppliersController {
                 supplier.get().getEmail(),
                 supplier.get().getPhone(),
                 supplier.get().getLocation(),
-                supplier.get().getSpecialties());
+                supplier.get().getSpecialties(),
+                supplier.get().getContactPerson(),
+                supplier.get().getWebLink());
 
         return ResponseEntity.ok(supplierResource);
     }
@@ -181,7 +188,9 @@ public class SuppliersController {
                 updateSupplierCommand.email(),
                 updateSupplierCommand.phone(),
                 updateSupplierCommand.location(),
-                updateSupplierCommand.specialties());
+                updateSupplierCommand.specialties(),
+                updateSupplierCommand.contactPerson(),
+                updateSupplierCommand.webLink());
 
         if (updatedSupplierId == 0L) {
             throw new SupplierNotFoundException(supplierId);
@@ -203,7 +212,9 @@ public class SuppliersController {
                 supplier.get().getEmail(),
                 supplier.get().getPhone(),
                 supplier.get().getLocation(),
-                supplier.get().getSpecialties());
+                supplier.get().getSpecialties(),
+                supplier.get().getContactPerson(),
+                supplier.get().getWebLink());
 
         return ResponseEntity.ok(supplierResource);
     }

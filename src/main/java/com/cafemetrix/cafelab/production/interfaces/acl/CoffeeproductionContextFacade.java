@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CoffeeproductionContextFacade {
-    Long createSupplier(Long userId, String name, String email, Long phone, String location, List<String> specialties);
+    Long createSupplier(Long userId, String name, String email, Long phone, String location, List<String> specialties, String contactPerson, String webLink);
 
-    Long updateSupplier(Long supplierId, String name, String email, Long phone, String location, List<String> specialties);
+    Long updateSupplier(Long supplierId, String name, String email, Long phone, String location, List<String> specialties, String contactPerson, String webLink);
 
     boolean deleteSupplier(Long supplierId);
 

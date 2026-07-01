@@ -8,7 +8,9 @@ public record UpdateSupplierCommand(
     String email,
     Long phone,
     String location,
-    List<String> specialties
+    List<String> specialties,
+    String contactPerson,
+    String webLink
 ) {
     public UpdateSupplierCommand {
         if (supplierId == null || supplierId <= 0) throw new IllegalArgumentException("SupplierId es requerido y debe ser positivo");

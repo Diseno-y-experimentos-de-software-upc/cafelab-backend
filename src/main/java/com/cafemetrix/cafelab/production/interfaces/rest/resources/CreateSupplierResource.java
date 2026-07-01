@@ -51,5 +51,21 @@ public record CreateSupplierResource(
                     message = "Cada especialidad solo puede contener letras, espacios y tildes; no puede ser solo números ni solo signos de puntuación"
             )
                     String
-            > specialties
+            > specialties,
+
+    @JsonProperty("contactPerson")
+    @Size(max = 100, message = "La persona de contacto no puede tener más de 100 caracteres")
+    @Pattern(
+            regexp = "^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\\s.]*$",
+            message = "La persona de contacto solo puede contener letras, espacios, tildes y puntos"
+    )
+    String contactPerson,
+
+    @JsonProperty("webLink")
+    @Size(max = 200, message = "El enlace web no puede tener más de 200 caracteres")
+    @Pattern(
+            regexp = "^(https?://[\\w.-]+(:\\d+)?(/\\S*)?)?$",
+            message = "El enlace web debe ser una URL http o https válida"
+    )
+    String webLink
 ) {}
