@@ -230,6 +230,22 @@ public class ProductionCostRecordsController {
         return ResponseEntity.ok(list.stream().map(this::toResource).collect(Collectors.toList()));
     }
 
+    @Operation(summary = "Registros activos por lote (el lote debe ser suyo)")
+    @GetMapping("/coffee-lot/{coffeeLotId}")
+    public ResponseEntity<?> getByCoffeeLotId(@PathVariable Long coffeeLotId) {
+        Optional<Long> currentOpt = resolveCurrentUserId();
+        if (currentOpt.isEmpty()) {
+            return unauthorized("Usuario no autenticado o perfil no encontrado");
+        }
+        if (!ownsCoffeeLot(coffeeLotId, currentOpt.get())) {
+            return forbidden("No autorizado para consultar este lote");
+        }
+        List<ProductionCostRecord> list =
+                managementContextFacade.getActiveProductionCostRecordsByCoffeeLotId(
+                        coffeeLotId, currentOpt.get());
+        return ResponseEntity.ok(list.stream().map(this::toResource).collect(Collectors.toList()));
+    }
+
     @Operation(summary = "Obtener registro por id")
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable Long id) {

@@ -222,4 +222,11 @@ public class ManagementContextFacadeImpl implements ManagementContextFacade {
     public Optional<ProductionCostRecord> getProductionCostRecordByIdAndUserId(Long id, Long userId) {
         return productionCostRecordQueryService.getProductionCostRecordByIdAndUserId(id, userId);
     }
+
+    @Override
+    public List<ProductionCostRecord> getActiveProductionCostRecordsByCoffeeLotId(
+            Long coffeeLotId, Long userId) {
+        return productionCostRecordQueryService.getActiveProductionCostRecordsByCoffeeLotId(
+                coffeeLotId, userId);
+    }
 }

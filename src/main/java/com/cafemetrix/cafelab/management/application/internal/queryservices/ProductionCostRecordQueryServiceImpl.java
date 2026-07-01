@@ -30,4 +30,11 @@ public class ProductionCostRecordQueryServiceImpl implements ProductionCostRecor
     public Optional<ProductionCostRecord> getProductionCostRecordByIdAndUserId(Long id, Long userId) {
         return productionCostRecordRepository.findByIdAndUserId(id, userId);
     }
+
+    @Override
+    public List<ProductionCostRecord> getActiveProductionCostRecordsByCoffeeLotId(
+            Long coffeeLotId, Long userId) {
+        return productionCostRecordRepository.findByCoffeeLotIdAndUserIdAndStatusNotOrderByCreatedAtDesc(
+                coffeeLotId, userId, ProductionCostRecord.STATUS_ANNULLED);
+    }
 }

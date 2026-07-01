@@ -11,4 +11,6 @@ public interface ProductionCostRecordQueryService {
     Optional<ProductionCostRecord> getProductionCostRecordById(Long id);
 
     Optional<ProductionCostRecord> getProductionCostRecordByIdAndUserId(Long id, Long userId);
+
+    List<ProductionCostRecord> getActiveProductionCostRecordsByCoffeeLotId(Long coffeeLotId, Long userId);
 }
