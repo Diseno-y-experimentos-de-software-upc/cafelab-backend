@@ -40,6 +40,8 @@ public class InventorySteps {
         var mockEntry = mock(InventoryEntry.class);
         when(mockEntry.getId()).thenReturn(80L);
         when(mockEntry.getUserId()).thenReturn((long) profileId);
+        when(mockEntry.getMotivoDeConsumo()).thenReturn("barra");
+        when(mockEntry.getNotasDeUso()).thenReturn("Uso para bebidas en barra");
         when(shared.managementContextFacade.getInventoryEntryById(80L)).thenReturn(Optional.of(mockEntry));
     }
 
@@ -49,13 +51,14 @@ public class InventorySteps {
         when(shared.coffeeproductionContextFacade.getCoffeeLotById((long) lotId)).thenReturn(Optional.empty());
     }
 
-    @When("envía una solicitud para crear una entrada de inventario con lote {int} cantidad {double} producto {string}")
-    public void enviaSolicitudCrearEntradaInventario(int lotId, double cantidad, String producto) throws Exception {
+    @When("envia una solicitud para crear una entrada de inventario con lote {int} cantidad {double} motivo {string} notas {string}")
+    public void enviaSolicitudCrearEntradaInventario(int lotId, double cantidad, String motivo, String notas) throws Exception {
         var body = Map.of(
                 "coffeeLotId", lotId,
                 "quantityUsed", cantidad,
                 "dateUsed", "2026-05-13T10:00:00",
-                "finalProduct", producto
+                "motivoDeConsumo", motivo,
+                "notasDeUso", notas
         );
         shared.lastResult = mockMvc.perform(post("/api/v1/inventory-entries")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -65,5 +68,6 @@ public class InventorySteps {
     @And("la respuesta contiene el id de la entrada de inventario creada")
     public void laRespuestaContieneElIdDeLaEntradaDeInventarioCreada() throws Exception {
         shared.lastResult.andExpect(jsonPath("$.id").isNotEmpty());
+        shared.lastResult.andExpect(jsonPath("$.motivoDeConsumo").value("barra"));
     }
 }

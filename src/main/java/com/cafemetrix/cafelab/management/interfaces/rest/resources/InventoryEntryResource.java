@@ -9,5 +9,7 @@ public record InventoryEntryResource(
     Long coffeeLotId,
     Double quantityUsed,
     LocalDateTime dateUsed,
-    String finalProduct
+    String finalProduct,
+    String motivoDeConsumo,
+    String notasDeUso
 ) {}

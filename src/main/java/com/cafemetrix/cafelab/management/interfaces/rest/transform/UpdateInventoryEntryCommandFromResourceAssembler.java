@@ -10,7 +10,9 @@ public class UpdateInventoryEntryCommandFromResourceAssembler {
             resource.coffeeLotId(),
             resource.quantityUsed(),
             resource.dateUsed(),
-            resource.finalProduct()
+            resource.finalProduct(),
+            resource.motivoDeConsumo(),
+            resource.notasDeUso()
         );
     }
 }

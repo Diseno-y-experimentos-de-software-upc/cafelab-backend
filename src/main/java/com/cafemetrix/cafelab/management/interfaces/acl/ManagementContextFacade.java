@@ -25,7 +25,9 @@ public interface ManagementContextFacade {
             Long coffeeLotId,
             Double quantityUsed,
             LocalDateTime dateUsed,
-            String finalProduct);
+            String finalProduct,
+            String motivoDeConsumo,
+            String notasDeUso);
 
     boolean deleteInventoryEntry(Long ownerUserId, Long inventoryEntryId);
 
