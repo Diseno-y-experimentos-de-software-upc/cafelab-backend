@@ -34,15 +34,25 @@ public class InventoryEntry extends AuditableAbstractAggregateRoot<InventoryEntr
     @AttributeOverride(name = "value", column = @Column(name = "final_product", length = 100))
     private FinalProduct finalProduct;
 
+    @Getter
+    @Column(name = "consumption_reason", nullable = false, length = 50)
+    private String consumptionReason;
+
+    @Getter
+    @Column(name = "usage_notes", columnDefinition = "TEXT")
+    private String usageNotes;
+
     public InventoryEntry() {}
 
     public InventoryEntry(Long userId, Long coffeeLotId, Double quantityUsed, 
-                         LocalDateTime dateUsed, String finalProduct) {
+                         LocalDateTime dateUsed, String finalProduct, String consumptionReason, String usageNotes) {
         this.userId = userId;
         this.coffeeLotId = coffeeLotId;
         this.quantityUsed = quantityUsed;
         this.dateUsed = dateUsed;
         this.finalProduct = new FinalProduct(finalProduct);
+        this.consumptionReason = consumptionReason;
+        this.usageNotes = usageNotes;
     }
 
     public InventoryEntry(CreateInventoryEntryCommand command) {
@@ -52,6 +62,8 @@ public class InventoryEntry extends AuditableAbstractAggregateRoot<InventoryEntr
         this.quantityUsed = command.quantityUsed();
         this.dateUsed = command.dateUsed();
         this.finalProduct = new FinalProduct(command.finalProduct());
+        this.consumptionReason = command.consumptionReason();
+        this.usageNotes = command.usageNotes();
     }
 
     public InventoryEntry update(UpdateInventoryEntryCommand command) {
@@ -59,6 +71,8 @@ public class InventoryEntry extends AuditableAbstractAggregateRoot<InventoryEntr
         this.quantityUsed = command.quantityUsed();
         this.dateUsed = command.dateUsed();
         this.finalProduct = new FinalProduct(command.finalProduct());
+        this.consumptionReason = command.consumptionReason();
+        this.usageNotes = command.usageNotes();
         return this;
     }
 

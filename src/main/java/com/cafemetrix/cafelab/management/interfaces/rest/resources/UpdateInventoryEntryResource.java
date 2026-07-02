@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 public record UpdateInventoryEntryResource(
         @JsonProperty("coffeeLotId")
         @NotNull(message = "Debe seleccionar un lote")
-        @Positive(message = "Lote inválido")
+        @Positive(message = "Lote invalido")
         Long coffeeLotId,
 
         @NotNull(message = "La cantidad consumida es obligatoria")
@@ -21,6 +21,17 @@ public record UpdateInventoryEntryResource(
         @NotNull(message = "La fecha es obligatoria")
         LocalDateTime dateUsed,
 
-        @NotBlank(message = "El producto final es obligatorio")
         @Size(max = 100, message = "El producto final no puede superar 100 caracteres")
-        String finalProduct) {}
+        String finalProduct,
+
+        @NotBlank(message = "El motivo de consumo es obligatorio")
+        @Size(max = 50, message = "El motivo de consumo no puede superar 50 caracteres")
+        String consumptionReason,
+
+        @Size(max = 1000, message = "Las notas de uso no pueden superar 1000 caracteres")
+        String usageNotes) {
+
+    public UpdateInventoryEntryResource {
+        finalProduct = finalProduct == null || finalProduct.isBlank() ? consumptionReason : finalProduct;
+    }
+}
