@@ -10,7 +10,9 @@ public record CreateCuppingSessionResource(
         LocalDate sessionDate,
         Boolean favorite,
         String resultsJson,
-        String roastStyleNotes
+        String roastStyleNotes,
+        Long coffeeLotId,
+        Long roastProfileId
 ) {
     public CreateCuppingSessionResource {
         if (name == null || name.isBlank()) {

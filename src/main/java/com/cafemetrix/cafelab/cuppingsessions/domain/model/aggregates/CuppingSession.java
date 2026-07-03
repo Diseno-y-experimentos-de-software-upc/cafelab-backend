@@ -50,6 +50,14 @@ public class CuppingSession extends AuditableAbstractAggregateRoot<CuppingSessio
     @Column(name = "roast_style_notes", columnDefinition = "TEXT")
     private String roastStyleNotes;
 
+    @Getter
+    @Column(name = "coffee_lot_id")
+    private Long coffeeLotId;
+
+    @Getter
+    @Column(name = "roast_profile_id")
+    private Long roastProfileId;
+
     public CuppingSession() {}
 
     public CuppingSession(CreateCuppingSessionCommand c) {
@@ -62,6 +70,8 @@ public class CuppingSession extends AuditableAbstractAggregateRoot<CuppingSessio
         this.favorite = c.favorite();
         this.resultsJson = blankToNull(c.resultsJson());
         this.roastStyleNotes = blankToNull(c.roastStyleNotes());
+        this.coffeeLotId = c.coffeeLotId();
+        this.roastProfileId = c.roastProfileId();
     }
 
     public void applyUpdate(UpdateCuppingSessionCommand c) {
@@ -73,6 +83,8 @@ public class CuppingSession extends AuditableAbstractAggregateRoot<CuppingSessio
         this.favorite = c.favorite();
         this.resultsJson = blankToNull(c.resultsJson());
         this.roastStyleNotes = blankToNull(c.roastStyleNotes());
+        this.coffeeLotId = c.coffeeLotId();
+        this.roastProfileId = c.roastProfileId();
     }
 
     private static String blankToNull(String s) {

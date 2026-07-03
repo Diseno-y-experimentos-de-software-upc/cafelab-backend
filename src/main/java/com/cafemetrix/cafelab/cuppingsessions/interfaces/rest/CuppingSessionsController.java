@@ -2,6 +2,7 @@ package com.cafemetrix.cafelab.cuppingsessions.interfaces.rest;
 
 import com.cafemetrix.cafelab.cuppingsessions.domain.exceptions.CuppingSessionNotFoundException;
 import com.cafemetrix.cafelab.cuppingsessions.domain.model.queries.GetCuppingSessionByIdForUserQuery;
+import com.cafemetrix.cafelab.cuppingsessions.domain.model.queries.GetCuppingSessionsByCoffeeLotIdQuery;
 import com.cafemetrix.cafelab.cuppingsessions.domain.model.queries.GetCuppingSessionsByUserIdQuery;
 import com.cafemetrix.cafelab.cuppingsessions.domain.services.CuppingSessionCommandService;
 import com.cafemetrix.cafelab.cuppingsessions.domain.services.CuppingSessionQueryService;
@@ -80,6 +81,18 @@ public class CuppingSessionsController {
             return unauthorized("Usuario no autenticado o perfil no encontrado");
         }
         var list = queryService.handle(new GetCuppingSessionsByUserIdQuery(userIdOpt.get()));
+        return ResponseEntity.ok(
+                list.stream().map(CuppingSessionResourceFromEntityAssembler::toResource).collect(Collectors.toList()));
+    }
+
+    @GetMapping("/lot/{coffeeLotId}")
+    @Operation(summary = "Listar sesiones del perfil asociadas a un lote de café")
+    public ResponseEntity<?> listByCoffeeLot(@PathVariable Long coffeeLotId) {
+        Optional<Long> userIdOpt = resolveCurrentUserId();
+        if (userIdOpt.isEmpty()) {
+            return unauthorized("Usuario no autenticado o perfil no encontrado");
+        }
+        var list = queryService.handle(new GetCuppingSessionsByCoffeeLotIdQuery(userIdOpt.get(), coffeeLotId));
         return ResponseEntity.ok(
                 list.stream().map(CuppingSessionResourceFromEntityAssembler::toResource).collect(Collectors.toList()));
     }

@@ -15,6 +15,8 @@ public class CreateCuppingSessionCommandFromResourceAssembler {
                 r.sessionDate(),
                 r.favoriteOrDefault(),
                 r.resultsJson(),
-                r.roastStyleNotes());
+                r.roastStyleNotes(),
+                r.coffeeLotId(),
+                r.roastProfileId());
     }
 }

@@ -82,7 +82,7 @@ public class CuppingSessionSteps {
     private CuppingSession mockSession(Long id, int userId) {
         var command = new CreateCuppingSessionCommand(
                 (long) userId, "Cata Test", "Etiopía", "Heirloom",
-                "Natural", LocalDate.of(2026, 5, 12), false, null, null
+                "Natural", LocalDate.of(2026, 5, 12), false, null, null, null, null
         );
         var session = spy(new CuppingSession(command));
         doReturn(id).when(session).getId();

@@ -16,6 +16,8 @@ public class CuppingSessionResourceFromEntityAssembler {
                 e.getSessionDate(),
                 e.isFavorite(),
                 e.getResultsJson(),
-                e.getRoastStyleNotes());
+                e.getRoastStyleNotes(),
+                e.getCoffeeLotId(),
+                e.getRoastProfileId());
     }
 }
