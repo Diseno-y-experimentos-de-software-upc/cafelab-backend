@@ -10,5 +10,7 @@ public record SupplierResource(
     String email,
     Long phone,
     String location,
-    List<String> specialties
+    List<String> specialties,
+    String contactPerson,
+    String webLink
 ) {}

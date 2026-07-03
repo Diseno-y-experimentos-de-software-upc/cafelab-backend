@@ -37,15 +37,15 @@ public class CoffeeproductionContextFacadeImpl implements CoffeeproductionContex
     }
 
     @Override
-    public Long createSupplier(Long userId, String name, String email, Long phone, String location, List<String> specialties) {
-        var createSupplierCommand = new CreateSupplierCommand(userId, name, email, phone, location, specialties);
+    public Long createSupplier(Long userId, String name, String email, Long phone, String location, List<String> specialties, String contactPerson, String webLink) {
+        var createSupplierCommand = new CreateSupplierCommand(userId, name, email, phone, location, specialties, contactPerson, webLink);
         var supplier = supplierCommandService.handle(createSupplierCommand);
         return supplier.map(Supplier::getId).orElse(0L);
     }
 
     @Override
-    public Long updateSupplier(Long supplierId, String name, String email, Long phone, String location, List<String> specialties) {
-        var updateSupplierCommand = new UpdateSupplierCommand(supplierId, name, email, phone, location, specialties);
+    public Long updateSupplier(Long supplierId, String name, String email, Long phone, String location, List<String> specialties, String contactPerson, String webLink) {
+        var updateSupplierCommand = new UpdateSupplierCommand(supplierId, name, email, phone, location, specialties, contactPerson, webLink);
         var supplier = supplierCommandService.handle(updateSupplierCommand);
         return supplier.map(Supplier::getId).orElse(0L);
     }

@@ -8,7 +8,9 @@ public record CreateSupplierCommand(
     String email,
     Long phone,
     String location,
-    List<String> specialties
+    List<String> specialties,
+    String contactPerson,
+    String webLink
 ) {
     public CreateSupplierCommand {
         if (userId == null || userId <= 0) {

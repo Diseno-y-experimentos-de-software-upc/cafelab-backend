@@ -11,7 +11,9 @@ public class UpdateSupplierCommandFromResourceAssembler {
             resource.email(),
             resource.phone(),
             resource.location(),
-            resource.specialties()
+            resource.specialties(),
+            resource.contactPerson(),
+            resource.webLink()
         );
     }
 }
