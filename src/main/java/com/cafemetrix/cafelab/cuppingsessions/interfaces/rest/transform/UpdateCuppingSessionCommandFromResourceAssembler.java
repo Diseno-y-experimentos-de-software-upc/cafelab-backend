@@ -17,6 +17,8 @@ public class UpdateCuppingSessionCommandFromResourceAssembler {
                 r.sessionDate(),
                 r.favorite(),
                 r.resultsJson(),
-                r.roastStyleNotes());
+                r.roastStyleNotes(),
+                r.coffeeLotId(),
+                r.roastProfileId());
     }
 }

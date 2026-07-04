@@ -12,5 +12,7 @@ public interface CuppingSessionRepository extends JpaRepository<CuppingSession, 
 
     List<CuppingSession> findByUserIdOrderBySessionDateDescCreatedAtDesc(Long userId);
 
+    List<CuppingSession> findByUserIdAndCoffeeLotIdOrderBySessionDateDescCreatedAtDesc(Long userId, Long coffeeLotId);
+
     Optional<CuppingSession> findByIdAndUserId(Long id, Long userId);
 }

@@ -2,6 +2,7 @@ package com.cafemetrix.cafelab.cuppingsessions.application.internal.queryservice
 
 import com.cafemetrix.cafelab.cuppingsessions.domain.model.aggregates.CuppingSession;
 import com.cafemetrix.cafelab.cuppingsessions.domain.model.queries.GetCuppingSessionByIdForUserQuery;
+import com.cafemetrix.cafelab.cuppingsessions.domain.model.queries.GetCuppingSessionsByCoffeeLotIdQuery;
 import com.cafemetrix.cafelab.cuppingsessions.domain.model.queries.GetCuppingSessionsByUserIdQuery;
 import com.cafemetrix.cafelab.cuppingsessions.domain.services.CuppingSessionQueryService;
 import com.cafemetrix.cafelab.cuppingsessions.infrastructure.persistence.jpa.repositories.CuppingSessionRepository;
@@ -21,6 +22,12 @@ public class CuppingSessionQueryServiceImpl implements CuppingSessionQueryServic
     @Override
     public List<CuppingSession> handle(GetCuppingSessionsByUserIdQuery query) {
         return repository.findByUserIdOrderBySessionDateDescCreatedAtDesc(query.userId());
+    }
+
+    @Override
+    public List<CuppingSession> handle(GetCuppingSessionsByCoffeeLotIdQuery query) {
+        return repository.findByUserIdAndCoffeeLotIdOrderBySessionDateDescCreatedAtDesc(
+                query.userId(), query.coffeeLotId());
     }
 
     @Override
