@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import org.hibernate.annotations.SQLRestriction;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /** Entrada de inventario; {@code userId} persiste en {@code user_id} (FK a profiles.id). */
@@ -82,12 +83,9 @@ public class InventoryEntry extends AuditableAbstractAggregateRoot<InventoryEntr
             throw new IllegalArgumentException("La fecha de uso es requerida");
         }
 
-        if (dateUsed.isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("La fecha de uso no puede ser anterior a un año desde hoy");
-        }
-
-        if (dateUsed.isAfter(LocalDateTime.now().plusYears(5))) {
-            throw new IllegalArgumentException("La fecha de uso no puede ser posterior a 5 años desde hoy");
+        LocalDate today = LocalDate.now();
+        if (!dateUsed.toLocalDate().equals(today)) {
+            throw new IllegalArgumentException("Solo se puede registrar consumo del día de hoy");
         }
     }
 
