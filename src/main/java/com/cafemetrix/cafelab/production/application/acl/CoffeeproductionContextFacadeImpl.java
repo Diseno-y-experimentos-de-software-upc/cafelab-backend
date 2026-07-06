@@ -82,24 +82,37 @@ public class CoffeeproductionContextFacadeImpl implements CoffeeproductionContex
     }
 
     @Override
-    public Long updateCoffeeLot(Long coffeeLotId, String lotName, String coffeeType, 
-                              String processingMethod, Integer altitude, Double weight, 
-                              String origin, String status, List<String> certifications) {
-        var updateCoffeeLotCommand = new UpdateCoffeeLotCommand(coffeeLotId, lotName, coffeeType, 
-                processingMethod, altitude, weight, origin, status, certifications);
-        var coffeeLot = coffeeLotCommandService.handle(updateCoffeeLotCommand);
+    public Long createCoffeeLotVersion(Long coffeeLotId, String lotName, String coffeeType,
+                                       String processingMethod, Integer altitude,
+                                       String origin, String status, List<String> certifications) {
+        var createCoffeeLotVersionCommand = new CreateCoffeeLotVersionCommand(
+                coffeeLotId, lotName, coffeeType, processingMethod, altitude, origin, status, certifications);
+        var coffeeLot = coffeeLotCommandService.handle(createCoffeeLotVersionCommand);
         return coffeeLot.map(CoffeeLot::getId).orElse(0L);
     }
 
     @Override
-    public boolean deleteCoffeeLot(Long coffeeLotId) {
-        var deleteCoffeeLotCommand = new DeleteCoffeeLotCommand(coffeeLotId);
-        return coffeeLotCommandService.handle(deleteCoffeeLotCommand);
+    public Long updateCoffeeLotStock(Long coffeeLotId, Double weight) {
+        var updateCoffeeLotStockCommand = new UpdateCoffeeLotStockCommand(coffeeLotId, weight);
+        var coffeeLot = coffeeLotCommandService.handle(updateCoffeeLotStockCommand);
+        return coffeeLot.map(CoffeeLot::getId).orElse(0L);
+    }
+
+    @Override
+    public Long annullCoffeeLot(Long coffeeLotId, String reason) {
+        var annullCoffeeLotCommand = new AnnullCoffeeLotCommand(coffeeLotId, reason);
+        var coffeeLot = coffeeLotCommandService.handle(annullCoffeeLotCommand);
+        return coffeeLot.map(CoffeeLot::getId).orElse(0L);
     }
 
     @Override
     public List<CoffeeLot> getAllCoffeeLots() {
         return coffeeLotQueryService.handle(new GetAllCoffeeLotsQuery());
+    }
+
+    @Override
+    public List<CoffeeLot> getSelectableCoffeeLots() {
+        return coffeeLotQueryService.handle(new GetSelectableCoffeeLotsQuery());
     }
 
     @Override
@@ -118,7 +131,12 @@ public class CoffeeproductionContextFacadeImpl implements CoffeeproductionContex
     }
 
     @Override
-    public Long createRoastProfile(Long userId, String name, String type, Integer duration, 
+    public List<CoffeeLot> getCoffeeLotVersionsByLineageId(Long lotLineageId) {
+        return coffeeLotQueryService.handle(new GetCoffeeLotVersionsByLineageIdQuery(lotLineageId));
+    }
+
+    @Override
+    public Long createRoastProfile(Long userId, String name, String type, Integer duration,
                                  Double tempStart, Double tempEnd, Long coffeeLotId, Boolean isFavorite) {
         var createRoastProfileCommand = new CreateRoastProfileCommand(userId, name, type, duration, 
                 tempStart, tempEnd, coffeeLotId, isFavorite);

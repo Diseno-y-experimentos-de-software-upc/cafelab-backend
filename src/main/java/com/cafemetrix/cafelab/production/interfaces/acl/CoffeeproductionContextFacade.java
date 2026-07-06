@@ -24,19 +24,25 @@ public interface CoffeeproductionContextFacade {
                               String processingMethod, Integer altitude, Double weight, 
                               String origin, String status, List<String> certifications);
 
-    Long updateCoffeeLot(Long coffeeLotId, String lotName, String coffeeType, 
-                              String processingMethod, Integer altitude, Double weight, 
-                              String origin, String status, List<String> certifications);
+    Long createCoffeeLotVersion(Long coffeeLotId, String lotName, String coffeeType,
+                                String processingMethod, Integer altitude,
+                                String origin, String status, List<String> certifications);
 
-    boolean deleteCoffeeLot(Long coffeeLotId);
+    Long updateCoffeeLotStock(Long coffeeLotId, Double weight);
+
+    Long annullCoffeeLot(Long coffeeLotId, String reason);
 
     List<CoffeeLot> getAllCoffeeLots();
+
+    List<CoffeeLot> getSelectableCoffeeLots();
 
     Optional<CoffeeLot> getCoffeeLotById(Long coffeeLotId);
 
     List<CoffeeLot> getCoffeeLotsByUserId(Long userId);
 
     List<CoffeeLot> getCoffeeLotsBySupplierId(Long supplierId);
+
+    List<CoffeeLot> getCoffeeLotVersionsByLineageId(Long lotLineageId);
 
     Long createRoastProfile(Long userId, String name, String type, Integer duration, 
                                  Double tempStart, Double tempEnd, Long coffeeLotId, Boolean isFavorite);

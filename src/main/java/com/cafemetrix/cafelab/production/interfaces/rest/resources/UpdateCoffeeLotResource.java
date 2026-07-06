@@ -36,13 +36,6 @@ public record UpdateCoffeeLotResource(
     @Max(value = 2500, message = "La altitud no puede superar 2500 msnm")
     Integer altitude,
 
-    @JsonProperty("weight")
-    @NotNull(message = "El peso es obligatorio")
-    @DecimalMin(value = "1.0", message = "El peso mínimo es 1 kg")
-    @DecimalMax(value = "70.0", message = "El peso máximo es 70 kg")
-    @Digits(integer = 2, fraction = 2, message = "El peso admite máximo 2 decimales")
-    Double weight,
-
     @JsonProperty("origin")
     @NotBlank(message = "El origen es obligatorio")
     @Size(max = 100, message = "El origen no puede superar 100 caracteres")

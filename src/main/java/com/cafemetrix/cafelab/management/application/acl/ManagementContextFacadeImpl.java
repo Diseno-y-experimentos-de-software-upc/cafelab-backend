@@ -98,7 +98,7 @@ public class ManagementContextFacadeImpl implements ManagementContextFacade {
     }
 
     private void deductStock(Long userId, Long coffeeLotId, double quantityUsed) {
-        CoffeeLot lot = requireOwnedLot(userId, coffeeLotId);
+        CoffeeLot lot = requireOwnedActiveLot(userId, coffeeLotId);
         if (quantityUsed > lot.getWeight()) {
             throw new InsufficientCoffeeLotStockException();
         }
@@ -124,18 +124,16 @@ public class ManagementContextFacadeImpl implements ManagementContextFacade {
         return lot;
     }
 
+    private CoffeeLot requireOwnedActiveLot(Long userId, Long coffeeLotId) {
+        var lot = requireOwnedLot(userId, coffeeLotId);
+        if (lot.isAnnulled()) {
+            throw new IllegalArgumentException("No se puede operar sobre un lote anulado");
+        }
+        return lot;
+    }
+
     private void persistLotWeight(CoffeeLot lot, double newWeight) {
-        long updated =
-                coffeeproductionContextFacade.updateCoffeeLot(
-                        lot.getId(),
-                        lot.getLotName(),
-                        lot.getCoffeeType(),
-                        lot.getProcessingMethod(),
-                        lot.getAltitude(),
-                        newWeight,
-                        lot.getOrigin(),
-                        lot.getStatus(),
-                        lot.getCertifications());
+        long updated = coffeeproductionContextFacade.updateCoffeeLotStock(lot.getId(), newWeight);
         if (updated == 0L) {
             throw new IllegalStateException("No se pudo actualizar el stock del lote");
         }

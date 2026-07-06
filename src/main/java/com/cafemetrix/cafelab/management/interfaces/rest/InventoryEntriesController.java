@@ -73,7 +73,9 @@ public class InventoryEntriesController {
                 entry.getCoffeeLotId(),
                 entry.getQuantityUsed(),
                 entry.getDateUsed(),
-                entry.getFinalProduct());
+                entry.getFinalProduct(),
+                entry.getConsumptionReason(),
+                entry.getUsageNotes());
     }
 
     @Operation(summary = "Registrar consumo (perfil desde JWT; descuenta stock del lote)")

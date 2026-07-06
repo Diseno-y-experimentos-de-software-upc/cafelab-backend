@@ -5,8 +5,9 @@ import com.cafemetrix.cafelab.production.domain.model.aggregates.CoffeeLot;
 import com.cafemetrix.cafelab.production.interfaces.acl.CoffeeproductionContextFacade;
 import com.cafemetrix.cafelab.production.interfaces.rest.resources.CoffeeLotResource;
 import com.cafemetrix.cafelab.production.interfaces.rest.resources.CreateCoffeeLotResource;
+import com.cafemetrix.cafelab.production.interfaces.rest.resources.AnnullCoffeeLotResource;
 import com.cafemetrix.cafelab.production.interfaces.rest.resources.UpdateCoffeeLotResource;
-import com.cafemetrix.cafelab.production.interfaces.rest.transform.UpdateCoffeeLotCommandFromResourceAssembler;
+import com.cafemetrix.cafelab.production.interfaces.rest.transform.CreateCoffeeLotVersionCommandFromResourceAssembler;
 import com.cafemetrix.cafelab.iam.infrastructure.authorization.sfs.support.CurrentProfileIdResolver;
 import com.cafemetrix.cafelab.shared.interfaces.rest.resources.MessageResource;
 import io.swagger.v3.oas.annotations.Operation;
@@ -52,11 +53,19 @@ public class CoffeeLotsController {
                 lot.getId(),
                 lot.getUserId(),
                 lot.getSupplierId(),
+                lot.getSupplierName(),
+                lot.getLotLineageId(),
+                lot.getVersionNumber(),
+                lot.getIsCurrent(),
+                lot.getSupersedesId(),
+                lot.getRecordStatus(),
+                lot.getAnnulmentReason(),
                 lot.getLotName(),
                 lot.getCoffeeType(),
                 lot.getProcessingMethod(),
                 lot.getAltitude(),
                 lot.getWeight(),
+                lot.getOriginalWeight(),
                 lot.getOrigin(),
                 lot.getStatus(),
                 lot.getCertifications());
@@ -133,6 +142,19 @@ public class CoffeeLotsController {
         return ResponseEntity.ok(toResources(coffeeLots));
     }
 
+    @Operation(summary = "Listar lotes activos seleccionables (inventario, costos)")
+    @GetMapping("/selectable")
+    public ResponseEntity<?> getSelectableCoffeeLots() {
+        Optional<Long> userIdOpt = resolveCurrentUserId();
+        if (userIdOpt.isEmpty()) {
+            return unauthorized("Usuario no autenticado o perfil no encontrado");
+        }
+        var coffeeLots = coffeeproductionContextFacade.getSelectableCoffeeLots().stream()
+                .filter(lot -> lot.getUserId().equals(userIdOpt.get()))
+                .toList();
+        return ResponseEntity.ok(toResources(coffeeLots));
+    }
+
     @Operation(summary = "Lotes por userId (solo el propio perfil)")
     @GetMapping("/profile/{userId}")
     public ResponseEntity<?> getCoffeeLotsByUserId(@PathVariable Long userId) {
@@ -180,9 +202,9 @@ public class CoffeeLotsController {
         return ResponseEntity.ok(toResource(coffeeLot.get()));
     }
 
-    @Operation(summary = "Update a coffee lot")
-    @PutMapping(value = "/{coffeeLotId}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> updateCoffeeLot(
+    @Operation(summary = "Create a new version of a coffee lot")
+    @PostMapping(value = "/{coffeeLotId}/versions", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> createCoffeeLotVersion(
             @PathVariable Long coffeeLotId,
             @Valid @RequestBody UpdateCoffeeLotResource resource) {
 
@@ -194,27 +216,22 @@ public class CoffeeLotsController {
             return forbidden("No autorizado para modificar este lote");
         }
 
-        var updateCoffeeLotCommand = UpdateCoffeeLotCommandFromResourceAssembler.toCommandFromResource(coffeeLotId, resource);
-        var updatedCoffeeLotId = coffeeproductionContextFacade.updateCoffeeLot(
-                updateCoffeeLotCommand.coffeeLotId(),
-                updateCoffeeLotCommand.lotName(),
-                updateCoffeeLotCommand.coffeeType(),
-                updateCoffeeLotCommand.processingMethod(),
-                updateCoffeeLotCommand.altitude(),
-                updateCoffeeLotCommand.weight(),
-                updateCoffeeLotCommand.origin(),
-                updateCoffeeLotCommand.status(),
-                updateCoffeeLotCommand.certifications());
+        var createVersionCommand = CreateCoffeeLotVersionCommandFromResourceAssembler.toCommandFromResource(coffeeLotId, resource);
+        var newCoffeeLotId = coffeeproductionContextFacade.createCoffeeLotVersion(
+                createVersionCommand.coffeeLotId(),
+                createVersionCommand.lotName(),
+                createVersionCommand.coffeeType(),
+                createVersionCommand.processingMethod(),
+                createVersionCommand.altitude(),
+                createVersionCommand.origin(),
+                createVersionCommand.status(),
+                createVersionCommand.certifications());
 
-        if (updatedCoffeeLotId == 0L) {
+        if (newCoffeeLotId == 0L) {
             throw new CoffeeLotNotFoundException(coffeeLotId);
         }
 
-        var coffeeLots = coffeeproductionContextFacade.getAllCoffeeLots();
-        var coffeeLot = coffeeLots.stream()
-                .filter(lot -> lot.getId().equals(updatedCoffeeLotId))
-                .findFirst();
-
+        var coffeeLot = coffeeproductionContextFacade.getCoffeeLotById(newCoffeeLotId);
         if (coffeeLot.isEmpty()) {
             throw new CoffeeLotNotFoundException(coffeeLotId);
         }
@@ -222,21 +239,58 @@ public class CoffeeLotsController {
         return ResponseEntity.ok(toResource(coffeeLot.get()));
     }
 
-    @Operation(summary = "Delete a coffee lot")
-    @DeleteMapping("/{coffeeLotId}")
-    public ResponseEntity<?> deleteCoffeeLot(@PathVariable Long coffeeLotId) {
+    @Operation(summary = "Get version history for a coffee lot lineage")
+    @GetMapping("/lineage/{lineageId}/versions")
+    public ResponseEntity<?> getCoffeeLotVersionsByLineage(@PathVariable Long lineageId) {
+        Optional<Long> currentOpt = resolveCurrentUserId();
+        if (currentOpt.isEmpty()) {
+            return unauthorized("Usuario no autenticado o perfil no encontrado");
+        }
+
+        var versions = coffeeproductionContextFacade.getCoffeeLotVersionsByLineageId(lineageId);
+        if (versions.isEmpty()) {
+            throw new CoffeeLotNotFoundException(lineageId);
+        }
+        if (!versions.get(0).getUserId().equals(currentOpt.get())) {
+            return forbidden("No autorizado para consultar este lote");
+        }
+
+        return ResponseEntity.ok(toResources(versions));
+    }
+
+    @Operation(summary = "Anular lote (no lo borra: queda para auditoría)")
+    @PostMapping(value = "/{coffeeLotId}/annulment", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> annullCoffeeLot(
+            @PathVariable Long coffeeLotId,
+            @Valid @RequestBody AnnullCoffeeLotResource resource) {
+
         Optional<Long> currentOpt = resolveCurrentUserId();
         if (currentOpt.isEmpty()) {
             return unauthorized("Usuario no autenticado o perfil no encontrado");
         }
         if (!ownsCoffeeLot(coffeeLotId, currentOpt.get())) {
-            return forbidden("No autorizado para eliminar este lote");
+            return forbidden("No autorizado para anular este lote");
         }
 
-        var deleted = coffeeproductionContextFacade.deleteCoffeeLot(coffeeLotId);
-        if (deleted) {
-            return ResponseEntity.ok(new MessageResource("Lote de café eliminado exitosamente"));
+        var existing = coffeeproductionContextFacade.getCoffeeLotById(coffeeLotId);
+        if (existing.isEmpty()) {
+            throw new CoffeeLotNotFoundException(coffeeLotId);
         }
-        throw new CoffeeLotNotFoundException(coffeeLotId);
+        if (existing.get().isAnnulled()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(new MessageResource("El lote ya está anulado"));
+        }
+
+        var annulledId = coffeeproductionContextFacade.annullCoffeeLot(coffeeLotId, resource.reason());
+        if (annulledId == 0L) {
+            throw new CoffeeLotNotFoundException(coffeeLotId);
+        }
+
+        var annulled = coffeeproductionContextFacade.getCoffeeLotById(annulledId);
+        if (annulled.isEmpty()) {
+            throw new CoffeeLotNotFoundException(coffeeLotId);
+        }
+
+        return ResponseEntity.ok(toResource(annulled.get()));
     }
 }

@@ -10,14 +10,22 @@ import java.util.List;
 
 @Repository
 public interface CoffeeLotRepository extends JpaRepository<CoffeeLot, Long> {
-    List<CoffeeLot> findByUserId(Long userId);
+    List<CoffeeLot> findByUserIdAndIsCurrentTrue(Long userId);
 
-    List<CoffeeLot> findBySupplierId(Long supplierId);
+    List<CoffeeLot> findBySupplierIdAndIsCurrentTrue(Long supplierId);
 
-    List<CoffeeLot> findByUserIdAndSupplierId(Long userId, Long supplierId);
+    List<CoffeeLot> findByIsCurrentTrue();
 
-    boolean existsByLotNameValueAndUserId(String lotName, Long userId);
+    List<CoffeeLot> findByIsCurrentTrueAndRecordStatus(String recordStatus);
 
-    @Query("SELECT COUNT(c) > 0 FROM CoffeeLot c WHERE c.lotName.value = :name AND c.userId = :userId AND c.id != :excludeId")
-    boolean existsByLotNameAndUserIdExcluding(@Param("name") String name, @Param("userId") Long userId, @Param("excludeId") Long excludeId);
+    List<CoffeeLot> findByLotLineageIdOrderByVersionNumberDesc(Long lotLineageId);
+
+    @Query("SELECT COUNT(c) > 0 FROM CoffeeLot c WHERE c.lotName.value = :name AND c.userId = :userId AND c.isCurrent = true AND c.recordStatus = 'activo'")
+    boolean existsCurrentByLotNameValueAndUserId(@Param("name") String name, @Param("userId") Long userId);
+
+    @Query("SELECT COUNT(c) > 0 FROM CoffeeLot c WHERE c.lotName.value = :name AND c.userId = :userId AND c.isCurrent = true AND c.recordStatus = 'activo' AND c.lotLineageId <> :lineageId")
+    boolean existsCurrentByLotNameValueAndUserIdExcludingLineage(
+            @Param("name") String name,
+            @Param("userId") Long userId,
+            @Param("lineageId") Long lineageId);
 }

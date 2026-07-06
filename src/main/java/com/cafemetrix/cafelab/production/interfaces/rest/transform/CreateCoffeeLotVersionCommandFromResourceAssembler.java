@@ -1,11 +1,11 @@
 package com.cafemetrix.cafelab.production.interfaces.rest.transform;
 
-import com.cafemetrix.cafelab.production.domain.model.commands.UpdateCoffeeLotCommand;
+import com.cafemetrix.cafelab.production.domain.model.commands.CreateCoffeeLotVersionCommand;
 import com.cafemetrix.cafelab.production.interfaces.rest.resources.UpdateCoffeeLotResource;
 
-public class UpdateCoffeeLotCommandFromResourceAssembler {
-    public static UpdateCoffeeLotCommand toCommandFromResource(Long coffeeLotId, UpdateCoffeeLotResource resource) {
-        return new UpdateCoffeeLotCommand(
+public class CreateCoffeeLotVersionCommandFromResourceAssembler {
+    public static CreateCoffeeLotVersionCommand toCommandFromResource(Long coffeeLotId, UpdateCoffeeLotResource resource) {
+        return new CreateCoffeeLotVersionCommand(
             coffeeLotId,
             resource.lot_name(),
             resource.coffee_type(),

@@ -41,6 +41,10 @@ public class RoastProfileCommandServiceImpl implements RoastProfileCommandServic
             throw new CoffeeLotOwnershipException();
         }
 
+        if (coffeeLot.get().isAnnulled()) {
+            throw new IllegalArgumentException("No se puede vincular un perfil de tueste a un lote anulado");
+        }
+
         var roastProfile = new RoastProfile(command);
         var savedRoastProfile = roastProfileRepository.save(roastProfile);
         return Optional.of(savedRoastProfile);
@@ -63,6 +67,10 @@ public class RoastProfileCommandServiceImpl implements RoastProfileCommandServic
 
             if (!coffeeLot.get().getUserId().equals(roastProfile.get().getUserId())) {
                 throw new CoffeeLotOwnershipException("El lote de café no pertenece al usuario del perfil");
+            }
+
+            if (coffeeLot.get().isAnnulled()) {
+                throw new IllegalArgumentException("No se puede vincular un perfil de tueste a un lote anulado");
             }
 
             var updatedRoastProfile = roastProfile.get().update(command);

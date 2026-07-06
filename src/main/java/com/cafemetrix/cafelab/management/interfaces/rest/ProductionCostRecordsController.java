@@ -206,6 +206,9 @@ public class ProductionCostRecordsController {
         if (lotOpt.isEmpty()) {
             return ResponseEntity.badRequest().body(new MessageResource("Lote no encontrado"));
         }
+        if (lotOpt.get().isAnnulled()) {
+            return ResponseEntity.badRequest().body(new MessageResource("No se puede registrar costo sobre un lote anulado"));
+        }
         var command = buildCreateCommand(ownerId, lotOpt.get(), resource);
         Long id = managementContextFacade.createProductionCostRecord(command);
         if (id == null || id == 0L) {
